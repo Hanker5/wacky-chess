@@ -83,7 +83,9 @@ main {
 
 .board {
   display: grid;
-  grid-template-columns: repeat(8, 1fr);
+  /* Fix both axes, and use minmax(0, …) so pieces can't stretch a row or column. */
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-template-rows: repeat(8, minmax(0, 1fr));
   aspect-ratio: 1;
   width: 100%;
   border: 3px solid var(--accent);
