@@ -58,7 +58,8 @@
       img.alt = def.name || game.kind(piece);
       token.append(img);
     } else {
-      token.append(el('span', '', def.icon));
+      // Chess glyphs (♔-♟) render as text so they take the token's color; emoji keep theirs.
+      token.append(el('span', /^[\u2654-\u265F]$/.test(def.icon) ? 'glyph' : '', def.icon));
     }
     if (!small && def.badge) {
       let badge;

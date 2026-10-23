@@ -37,6 +37,9 @@ for (const side of W.SIDES) {
   } catch (err) {
     failed = true;
     console.error(`✖ sides/${side}/pieces.js failed to load:\n  ${err.stack || err}\n`);
+    if (/already been declared/.test(err.message)) {
+      console.error('  Hint: both side files share one page. Keep your code inside the (() => { ... })() wrapper.\n');
+    }
   }
 }
 if (failed) process.exit(1);

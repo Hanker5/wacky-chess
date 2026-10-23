@@ -37,6 +37,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 
 body {
   margin: 0;
@@ -148,7 +149,6 @@ main {
   justify-content: center;
   font-size: clamp(16px, 5.4vw, 38px);
   line-height: 1;
-  font-variant-emoji: text;
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.35);
   pointer-events: none;
   overflow: visible;
@@ -162,6 +162,7 @@ main {
   left: -10%;
   font-size: 40%;
 }
+.token .glyph { font-variant-emoji: text; font-family: "Segoe UI Symbol", "DejaVu Sans", "Noto Sans Symbols 2", serif; }
 .token img { width: 78%; height: 78%; object-fit: contain; }
 .token .badge {
   position: absolute;
