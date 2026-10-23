@@ -1,0 +1,9 @@
+{
+  "name": "wacky-chess",
+  "private": true,
+  "description": "Chess-style game where each player designs their own wacky pieces.",
+  "scripts": {
+    "test": "node --test test/",
+    "check": "node tools/check.js"
+  }
+}

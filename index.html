@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wacky Chess</title>
+  <link rel="stylesheet" href="ui/style.css">
+</head>
+<body>
+  <header>
+    <h1>Wacky Chess</h1>
+    <div id="status" class="status"></div>
+  </header>
+
+  <main>
+    <section class="board-wrap">
+      <div id="board" class="board" role="grid" aria-label="Game board"></div>
+      <div id="picker" class="picker" hidden></div>
+    </section>
+
+    <aside class="sidebar">
+      <div class="controls">
+        <button id="undo" type="button">Undo</button>
+        <button id="new-game" type="button">New game</button>
+        <button id="flip" type="button">Flip board</button>
+        <label class="toggle"><input id="auto-flip" type="checkbox"> Auto-flip each turn</label>
+      </div>
+      <div id="alert" class="alert" hidden></div>
+      <div id="info" class="info"></div>
+      <div class="captured">
+        <h2>Captured</h2>
+        <div id="captured-white" class="captured-row"></div>
+        <div id="captured-black" class="captured-row"></div>
+      </div>
+      <div class="log-wrap">
+        <h2>Log</h2>
+        <ol id="log" class="log"></ol>
+      </div>
+    </aside>
+  </main>
+
+  <section class="guide">
+    <h2>Piece guide</h2>
+    <div id="guide" class="guide-cols"></div>
+  </section>
+
+  <div id="fatal" class="fatal" hidden></div>
+
+  <!-- Engine first, then each player's pieces, then the UI. -->
+  <script src="engine/engine.js"></script>
+  <script src="sides/white/pieces.js"></script>
+  <script src="sides/black/pieces.js"></script>
+  <script src="ui/ui.js"></script>
+</body>
+</html>
