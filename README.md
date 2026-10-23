@@ -8,8 +8,17 @@ agent, in secret. Then you merge and find out what the other person made.
 
 ## Play
 
-Open `index.html` in a browser. You don't need to install or build anything. It's
-hot-seat play on one screen.
+```sh
+npm start        # or: node tools/serve.js
+```
+
+Then open **http://localhost:8000**. All you need is Node. There's nothing to install
+or build. It's hot-seat play on one screen.
+
+> Double-clicking `index.html` also works in some browsers. It **doesn't** work in
+> sandboxed Flatpak or Snap browsers (the default on Bazzite, Fedora Silverblue, and
+> Ubuntu), which only get that one file and show a "Loading…" message forever. Use
+> `npm start`.
 
 - Click your piece to see its moves. Dots mean move, red rings mean capture, and
   dashed purple boxes mean special moves.
@@ -63,13 +72,12 @@ other either. Each one is a separate game.
 3. **Design in secret.** Tell your AI agent which color you are. It reads
    `AGENTS.md` and `docs/PIECE_API.md`, then works only in `sides/<color>/`. Check
    the work with `node tools/check.js <color>` (it fuzzes random games looking for
-   crashes) and play-test by opening `index.html`. Commit and push to your player
+   crashes) and play-test with `npm start`. Commit and push to your player
    branch as you go. Don't look at the other player's branch.
 4. **Bring it together.** When you're both done, merge both player branches into
    the match branch (a pull request into `match/2026-10-23` is easiest). The two
    players change different folders, so the merges are clean.
-5. **Play** from the match branch: `git checkout match/2026-10-23`, then open
-   `index.html`.
+5. **Play** from the match branch: `git checkout match/2026-10-23`, then `npm start`.
 
 ### Changing the template
 
@@ -88,5 +96,6 @@ sides/white/pieces.js   White's pieces  ← player 1
 sides/black/pieces.js   Black's pieces  ← player 2
 docs/PIECE_API.md       how to define pieces, with examples
 tools/check.js          validate + fuzz the side files
+tools/serve.js          local server for playing (npm start)
 test/                   engine tests (node --test)
 ```

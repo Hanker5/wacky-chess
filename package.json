@@ -3,6 +3,7 @@
   "private": true,
   "description": "Chess-style game where each player designs their own wacky pieces.",
   "scripts": {
+    "start": "node tools/serve.js",
     "test": "node --test test/",
     "check": "node tools/check.js"
   }

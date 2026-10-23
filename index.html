@@ -12,6 +12,16 @@
     <div id="status" class="status"></div>
   </header>
 
+  <!-- Removed by ui/ui.js once the game starts. If it stays, the scripts never loaded. -->
+  <div id="boot" style="max-width: 640px; margin: 24px auto; padding: 0 16px; font-family: sans-serif;">
+    <p><strong>Loading…</strong></p>
+    <p>If this message doesn't go away, your browser couldn't load the game's files.
+      That usually means index.html was opened straight from disk in a sandboxed (Flatpak or Snap) browser,
+      which only gets that one file.</p>
+    <p>Instead, run <code>npm start</code> in the game folder and open
+      <a href="http://localhost:8000/">http://localhost:8000</a>.</p>
+  </div>
+
   <main>
     <section class="board-wrap">
       <div id="board" class="board" role="grid" aria-label="Game board"></div>

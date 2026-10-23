@@ -2,6 +2,8 @@
 (function () {
   'use strict';
 
+  document.getElementById('boot').remove();
+
   const W = window.WackyChess;
   const $ = (id) => document.getElementById(id);
   const el = (tag, className, text) => {

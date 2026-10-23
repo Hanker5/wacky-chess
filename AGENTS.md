@@ -71,8 +71,8 @@ player asks.
   It validates the file and plays a few hundred random games, reporting any crash
   blamed on your pieces. Fix all crashes. `node --test` runs the engine's own tests.
   Those should keep passing, since you're not changing the engine.
-- To play-test, open `index.html` in a browser. You don't need a server or a build
-  step.
+- To play-test, run `npm start` and open http://localhost:8000. Reload after each
+  edit. Opening `index.html` from disk fails in sandboxed (Flatpak or Snap) browsers.
 - Wacky is the point, but keep the game playable. Avoid pieces that win on turn 1,
   can never be captured, or make the game impossible to finish. Ask your player how
   chaotic they want things.
