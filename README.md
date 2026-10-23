@@ -27,23 +27,62 @@ hot-seat play on one screen.
 - You also lose if you have no legal moves on your turn.
 - Anything else is defined by the pieces themselves.
 
-## How the split works
+## Branch rules: every match is its own branch
 
-1. Both players clone this repo.
-2. Each player makes a branch (`white-pieces` or `black-pieces`) and tells their AI
-   agent which color they are. The agent reads `AGENTS.md` and `docs/PIECE_API.md`.
-3. The agent designs pieces with you in `sides/<color>/pieces.js` and only touches
-   that folder.
-4. Check your work with `node tools/check.js <color>` (it fuzzes random games looking
-   for crashes) and play-test by opening `index.html`.
-5. When you're both done, merge both branches into `main`. The folders don't overlap,
-   so the merge is clean. Then play!
+`main` is the **base template**: the engine, the UI, the docs, and two plain-chess
+sides. Custom pieces never go on `main`. Each match gets its own branches, so every
+game you've ever played stays playable later, with exactly the pieces it had.
+
+| Branch | What's on it |
+|---|---|
+| `main` | The template. Only engine, UI, docs, and tooling changes, and only when both players agree. Both `sides/` files stay plain chess. |
+| `match/<name>` | One match: both players' finished sides, merged together. Play the game from here. |
+| `match/<name>-white` | White's work in progress for that match. Only `sides/white/` changes. |
+| `match/<name>-black` | Black's work in progress for that match. Only `sides/black/` changes. |
+
+`<name>` is the match date, like `match/2026-10-23`. Add a nickname if you want, like
+`match/2026-10-23-goblins`.
+
+Never merge a `match/...` branch into `main`. Match branches never merge into each
+other either. Each one is a separate game.
+
+### Playing a match
+
+1. **Start the match** (either player, once):
+   ```sh
+   git checkout main && git pull
+   git checkout -b match/2026-10-23
+   git push -u origin match/2026-10-23
+   ```
+2. **Each player branches off the match** for their color:
+   ```sh
+   git fetch && git checkout match/2026-10-23
+   git checkout -b match/2026-10-23-black      # or -white
+   git push -u origin match/2026-10-23-black
+   ```
+3. **Design in secret.** Tell your AI agent which color you are. It reads
+   `AGENTS.md` and `docs/PIECE_API.md`, then works only in `sides/<color>/`. Check
+   the work with `node tools/check.js <color>` (it fuzzes random games looking for
+   crashes) and play-test by opening `index.html`. Commit and push to your player
+   branch as you go. Don't look at the other player's branch.
+4. **Bring it together.** When you're both done, merge both player branches into
+   the match branch (a pull request into `match/2026-10-23` is easiest). The two
+   players change different folders, so the merges are clean.
+5. **Play** from the match branch: `git checkout match/2026-10-23`, then open
+   `index.html`.
+
+### Changing the template
+
+Did you find an engine bug, or want a new feature for pieces? Make the change on a
+normal branch off `main` and open a pull request into `main` that both players
+agree on. To use it in a match that's already running, merge `main` into that
+match's branches (`git merge main`). Never go the other way.
 
 ## Layout
 
 ```
 index.html              the game page
-engine/engine.js        rules engine (shared — don't edit while split)
+engine/engine.js        rules engine (template; changed only on main)
 ui/                     board UI
 sides/white/pieces.js   White's pieces  ← player 1
 sides/black/pieces.js   Black's pieces  ← player 2
