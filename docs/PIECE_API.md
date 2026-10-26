@@ -8,6 +8,7 @@ you want any, go in `sides/<color>/assets/`.
 - [Moves](#moves)
 - [Hooks](#hooks)
 - [The `game` object](#the-game-object)
+- [Visual effects](#visual-effects)
 - [Rules the engine enforces](#rules-the-engine-enforces)
 - [Examples of wacky pieces](#examples-of-wacky-pieces)
 - [Gotchas](#gotchas)
@@ -172,6 +173,42 @@ the Trapper below).
 **Randomness:** use `g.random()`, `g.randomInt(n)`, or `g.pick(array)`. Don't use
 `Math.random()`. The game's random numbers are seeded, so undo replays the same luck.
 
+## Visual effects
+
+Actions and hooks can queue animations with `g.effect(kind, options)`. Effects are
+pure decoration: they never change the game, and they're ignored outside the browser.
+
+```js
+g.effect('projectile', { from: [x, y], to: [x, y], icon: '🥧' })     // an icon flies between two squares
+g.effect('burst', { x, y, radius: 1, icon: '✨', color: 'gold' })     // an expanding flash
+```
+
+| Option | Kind | What it is |
+|--------|------|------------|
+| `from`, `to` | projectile | `[x, y]` squares. Required. |
+| `x`, `y` | burst | The center square. Required. |
+| `radius` | burst | How far it reaches, in squares: `0` = one square, `1` (default) = the 3×3 area, and so on. |
+| `icon` | both | Emoji, text, or an image path. Optional. A projectile without one is a dot. |
+| `color` | both | Any CSS color. Optional (bursts default to orange). |
+
+After a move, the UI plays every effect that move queued, in order, over the board as it
+looked *before* the move. Then it shows the new position. That includes effects from
+hooks that run as a result, like `onCaptured` or the next turn's `onTurnStart`. So queue
+effects in the order things happen: a projectile first, then the burst where it lands.
+They don't replay on undo, and they're skipped when the system asks for reduced motion.
+
+```js
+// Inside moves(), for a target square (x, y):
+{ x, y, label: 'Throw pie 🥧', action(p, g) {
+  g.effect('projectile', { from: [p.x, p.y], to: [x, y], icon: '🥧' });
+  g.effect('burst', { x, y, radius: 0, icon: '💦', color: 'white' });
+  g.capture(g.at(x, y), p);
+} }
+```
+
+Like everything else that changes the game state, call `g.effect` only in actions and
+hooks, never in `moves()`.
+
 ## Rules the engine enforces
 
 - White moves first. Each turn you play exactly one move with one piece.
@@ -300,7 +337,7 @@ hypnotist: {
 
 - **Keep the `(() => { ... })()` wrapper.** Both side files load into one page. A
   top-level `const goblin = ...` in both files would crash the page.
-- **`moves()` must not change anything**, not even `p.data`.
+- **`moves()` must not change anything**, not even `p.data`, and must not call `g.effect`.
 - Inside an action that runs over a list (like the Hypnotist), capture the target in
   the closure. Don't look it up again later.
 - `onCapture` fires before the attacker moves in. If you spawn something on the
