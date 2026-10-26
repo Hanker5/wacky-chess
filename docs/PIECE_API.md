@@ -179,8 +179,8 @@ Actions and hooks can queue animations with `g.effect(kind, options)`. Effects a
 pure decoration: they never change the game, and they're ignored outside the browser.
 
 ```js
-g.effect('projectile', { from: [x, y], to: [x, y], icon: '🔥' })      // an icon flies between two squares
-g.effect('burst', { x, y, radius: 1, icon: '💥', color: 'orange' })   // an expanding flash
+g.effect('projectile', { from: [x, y], to: [x, y], icon: '🥧' })     // an icon flies between two squares
+g.effect('burst', { x, y, radius: 1, icon: '✨', color: 'gold' })     // an expanding flash
 ```
 
 | Option | Kind | What it is |
@@ -199,9 +199,9 @@ They don't replay on undo, and they're skipped when the system asks for reduced 
 
 ```js
 // Inside moves(), for a target square (x, y):
-{ x, y, label: 'Fireball 🔥', action(p, g) {
-  g.effect('projectile', { from: [p.x, p.y], to: [x, y], icon: '🔥' });
-  g.effect('burst', { x, y, radius: 0, icon: '💥' });
+{ x, y, label: 'Throw pie 🥧', action(p, g) {
+  g.effect('projectile', { from: [p.x, p.y], to: [x, y], icon: '🥧' });
+  g.effect('burst', { x, y, radius: 0, icon: '💦', color: 'white' });
   g.capture(g.at(x, y), p);
 } }
 ```
