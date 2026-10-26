@@ -17,6 +17,8 @@
   const HOOKS = ['moves', 'onMove', 'onCapture', 'onCaptured', 'onTurnStart', 'badge'];
   const IMAGE_RE = /\.(png|jpe?g|gif|svg|webp)$/i;
   const MAX_MOVE_DEPTH = 4;
+  const EFFECTS = ['projectile', 'burst'];
+  const MAX_EFFECTS = 64;
 
   // Offsets are written from the moving piece's own seat: +y is "forward".
   const DIRS = {
@@ -127,6 +129,7 @@
         nextId: 1,
         extraTurn: false,
         lastMove: null,
+        effects: [],
         rng: (opts.seed !== undefined ? opts.seed : Math.floor(Math.random() * 2 ** 31)) | 0,
       };
       for (const side of SIDES) {
@@ -150,6 +153,8 @@
     /** 'white', 'black', 'draw', or null while the game is on. */
     get winner() { return this.state.winner; }
     get result() { return this.state.result; }
+    /** Visual effects queued by the last move (see effect()). */
+    get effects() { return this.state.effects; }
 
     sideName(side) {
       return (this.sides[side] && this.sides[side].name) || side[0].toUpperCase() + side.slice(1);
@@ -319,6 +324,7 @@
 
       const before = clone(this.state);
       try {
+        this.state.effects = [];
         const from = { x: piece.x, y: piece.y };
         const to = { x: move.x, y: move.y };
         const label = move.label ? ` (${move.label})` : '';
@@ -413,6 +419,34 @@
     /** The side that just moved goes again after this move. */
     extraTurn() {
       this.state.extraTurn = true;
+    }
+
+    /** Queue a purely visual effect for the UI to play once this move is done. Changes nothing. */
+    effect(kind, opts = {}) {
+      if (!EFFECTS.includes(kind)) {
+        throw new Error(`effect: unknown kind ${JSON.stringify(kind)} (use ${EFFECTS.map((k) => `"${k}"`).join(' or ')})`);
+      }
+      const where = (name, value) => {
+        if (!Array.isArray(value) || !this.inBounds(value[0], value[1])) {
+          throw new Error(`effect: ${name} must be an on-board [x, y], got ${JSON.stringify(value)}`);
+        }
+        return [value[0], value[1]];
+      };
+      for (const name of ['icon', 'color']) {
+        if (opts[name] !== undefined && typeof opts[name] !== 'string') throw new Error(`effect: ${name} must be a string`);
+      }
+      const fx = { kind, icon: opts.icon || '', color: opts.color || '' };
+      if (kind === 'projectile') {
+        fx.from = where('from', opts.from);
+        fx.to = where('to', opts.to);
+      } else {
+        [fx.x, fx.y] = where('x, y', [opts.x, opts.y]);
+        fx.radius = opts.radius === undefined ? 1 : opts.radius;
+        if (!Number.isInteger(fx.radius) || fx.radius < 0 || fx.radius >= SIZE) {
+          throw new Error(`effect: radius must be a whole number from 0 to ${SIZE - 1}`);
+        }
+      }
+      if (this.state.effects.length < MAX_EFFECTS) this.state.effects.push(fx);
     }
 
     win(side, reason = '') {
