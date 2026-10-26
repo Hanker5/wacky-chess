@@ -55,6 +55,8 @@
       const [ox, oy] = t.portal.to;
       const exit = g.peekTile(ox, oy);
       const blocker = g.at(ox, oy);
+      g.effect('burst', { x, y, radius: 0, icon: '🌀', color: 'rgba(120, 90, 255, 0.85)' });
+      g.effect('burst', { x: ox, y: oy, radius: 0, icon: blocker ? '💥' : '🌀', color: 'rgba(120, 90, 255, 0.85)' });
       if (blocker) {
         g.log(`🌀 ${g.nameOf(traveler)} telefrags ${g.nameOf(blocker)} on ${g.square(ox, oy)}!`);
         g.capture(blocker, null);
@@ -136,6 +138,8 @@
                 if (!target) continue;
                 if (g.isEnemy(p, target) && !g.def(target).royal) {
                   out.push({ x, y, label: 'Fireball 🔥', action(p, g) {
+                    g.effect('projectile', { from: [p.x, p.y], to: [x, y], icon: '🔥' });
+                    g.effect('burst', { x, y, radius: 0, icon: '💥' });
                     g.log(`🔥 ${g.nameOf(p)} hurls a fireball at ${g.nameOf(target)}!`);
                     g.capture(target, p);
                     p.data.cooldown = FIREBALL_COOLDOWN;
@@ -201,6 +205,7 @@
           ...g.leap(p, [[-1, 1], [1, 1]], { capture: 'only' }),
           { x: p.x, y: p.y, label: 'Detonate 💥', action(p, g) {
             g.log(`💥 ${g.nameOf(p)} on ${g.square(p.x, p.y)} explodes!`);
+            g.effect('burst', { x: p.x, y: p.y, radius: 1, icon: '💥', color: 'rgba(255, 80, 0, 0.9)' });
             for (const [dx, dy] of g.DIRS.ALL) {
               const [x, y] = g.rel(p, dx, dy);
               const victim = g.inBounds(x, y) && g.at(x, y);
