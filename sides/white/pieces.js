@@ -101,7 +101,7 @@
     },
     catapult: {
       name: 'Catapult',
-      icon: '🏹',
+      icon: 'sides/white/assets/catapult.svg',
       description:
         'Slides any distance in a straight line, like a rook. ' +
         `FLING: instead of moving, it launches any piece (either side) on one of the 8 squares around it. ` +
@@ -119,8 +119,8 @@
             if (!g.inBounds(x, y)) break;
             const target = g.at(x, y);
             if (target && !g.isEnemy(p, target)) continue;
-            out.push({ x, y, label: `Fling ${g.nameOf(ammo)} 🏹`, action(p, g) {
-              g.log(`🏹 ${g.nameOf(p)} flings ${g.nameOf(ammo)} to ${g.square(x, y)}!`);
+            out.push({ x, y, label: `Fling ${g.nameOf(ammo)} 🪨`, action(p, g) {
+              g.log(`🪨 ${g.nameOf(p)} flings ${g.nameOf(ammo)} to ${g.square(x, y)}!`);
               g.effect('projectile', { from: [ammo.x, ammo.y], to: [x, y], icon: g.def(ammo).icon });
               if (target) {
                 g.effect('burst', { x, y, radius: 0, icon: '💥' });
