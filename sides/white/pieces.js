@@ -191,10 +191,23 @@
       pawn: {
         name: 'Pawn',
         icon: '♟',
-        description: 'Moves 1 forward (2 on its first move) and captures diagonally forward. Becomes a Queen on the far rank.',
+        description:
+          'Moves 1 forward (2 on its first move) and captures diagonally forward. Becomes a Queen on the far rank. ' +
+          'DETONATE 💥: instead of moving, it can blow itself up (click the pawn, then its own square), ' +
+          'destroying itself and every piece on the 8 squares around it, from either side, kings included. ' +
+          'Pawns caught in a blast do not explode.',
         moves: unlessCasting((p, g) => [
           ...g.slide(p, [[0, 1]], { max: p.moveCount === 0 ? 2 : 1, capture: false }),
           ...g.leap(p, [[-1, 1], [1, 1]], { capture: 'only' }),
+          { x: p.x, y: p.y, label: 'Detonate 💥', action(p, g) {
+            g.log(`💥 ${g.nameOf(p)} on ${g.square(p.x, p.y)} explodes!`);
+            for (const [dx, dy] of g.DIRS.ALL) {
+              const [x, y] = g.rel(p, dx, dy);
+              const victim = g.inBounds(x, y) && g.at(x, y);
+              if (victim) g.capture(victim, null);
+            }
+            g.capture(p, null);
+          } },
         ]),
         onMove(p, g) {
           if (g.rank(p) === 8) {
