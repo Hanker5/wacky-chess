@@ -18,6 +18,7 @@
   let flipped = false;
   let autoFlip = false;
   let alertText = '';
+  let animating = false;
 
   try {
     autoFlip = localStorage.getItem('wacky-chess:auto-flip') === '1';
@@ -261,15 +262,104 @@
     picker.style.top = `${rect.bottom - wrap.top}px`;
   }
 
-  function doPlay(piece, move) {
+  // ------------------------------------------------------------ effects
+
+  const reducedMotion = () => !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+  // Center and size of a square, relative to the board wrapper the effects layer covers.
+  function squareBox(x, y) {
+    const sq = $('board').querySelector(`.sq[data-x="${x}"][data-y="${y}"]`);
+    const wrap = $('board').parentElement.getBoundingClientRect();
+    const r = sq.getBoundingClientRect();
+    return { cx: r.left - wrap.left + r.width / 2, cy: r.top - wrap.top + r.height / 2, size: r.width };
+  }
+
+  function fxIcon(icon) {
+    if (W.isImageIcon(icon)) {
+      const img = el('img');
+      img.src = icon;
+      return img;
+    }
+    return el('span', '', icon);
+  }
+
+  function playProjectile(layer, fx) {
+    const a = squareBox(fx.from[0], fx.from[1]);
+    const b = squareBox(fx.to[0], fx.to[1]);
+    const node = el('div', 'fx-projectile');
+    node.append(fxIcon(fx.icon || '●'));
+    node.style.width = node.style.height = `${a.size * 0.6}px`;
+    node.style.left = `${a.cx}px`;
+    node.style.top = `${a.cy}px`;
+    if (fx.color) node.style.color = fx.color;
+    layer.append(node);
+    const squares = Math.max(Math.abs(fx.to[0] - fx.from[0]), Math.abs(fx.to[1] - fx.from[1]));
+    const anim = node.animate([
+      { transform: 'translate(-50%, -50%) scale(0.6)' },
+      { transform: `translate(calc(-50% + ${b.cx - a.cx}px), calc(-50% + ${b.cy - a.cy}px)) scale(1.1)` },
+    ], { duration: Math.min(650, 200 + squares * 90), easing: 'ease-in' });
+    return anim.finished.then(() => node.remove());
+  }
+
+  function playBurst(layer, fx) {
+    const c = squareBox(fx.x, fx.y);
+    const size = c.size * (2 * fx.radius + 1);
+    const node = el('div', 'fx-burst');
+    node.style.width = node.style.height = `${size}px`;
+    node.style.left = `${c.cx}px`;
+    node.style.top = `${c.cy}px`;
+    node.style.setProperty('--fx-color', fx.color || 'rgba(255, 140, 0, 0.85)');
+    if (fx.icon) {
+      const icon = fxIcon(fx.icon);
+      icon.style.fontSize = `${c.size * 0.8}px`;
+      node.append(icon);
+    }
+    layer.append(node);
+    const anim = node.animate([
+      { transform: 'translate(-50%, -50%) scale(0.15)', opacity: 1 },
+      { transform: 'translate(-50%, -50%) scale(1)', opacity: 1, offset: 0.55 },
+      { transform: 'translate(-50%, -50%) scale(1.1)', opacity: 0 },
+    ], { duration: 550, easing: 'ease-out' });
+    return anim.finished.then(() => node.remove());
+  }
+
+  // Play the move's effects one after another over the board as it was before the move.
+  async function playEffects(effects) {
+    const board = $('board');
+    board.querySelectorAll('.hint').forEach((n) => n.remove());
+    board.querySelectorAll('.selected').forEach((n) => n.classList.remove('selected'));
+    const layer = el('div', 'fx-layer');
+    board.parentElement.append(layer);
+    try {
+      for (const fx of effects) {
+        await (fx.kind === 'projectile' ? playProjectile(layer, fx) : playBurst(layer, fx));
+      }
+    } finally {
+      layer.remove();
+    }
+  }
+
+  async function doPlay(piece, move) {
+    let ok = false;
     try {
       game.play(piece, move);
       alertText = '';
+      ok = true;
     } catch (err) {
       alertText = `⚠ Move cancelled — ${err.message}`;
       console.error(err);
     }
     selectedId = null;
+    if (ok && game.effects.length && !reducedMotion() && Element.prototype.animate) {
+      animating = true;
+      try {
+        await playEffects(game.effects);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        animating = false;
+      }
+    }
     if (autoFlip) flipped = game.turn === 'black';
     render();
   }
@@ -292,10 +382,12 @@
   }
 
   $('board').addEventListener('click', (e) => {
+    if (animating) return;
     const sq = e.target.closest('.sq');
     if (sq) onSquareClick(sq);
   });
   $('undo').addEventListener('click', () => {
+    if (animating) return;
     closePicker();
     game.undo();
     selectedId = null;
@@ -304,10 +396,12 @@
     render();
   });
   $('new-game').addEventListener('click', () => {
+    if (animating) return;
     closePicker();
     if (game.history.length === 0 || game.winner || window.confirm('Start a new game?')) newGame();
   });
   $('flip').addEventListener('click', () => {
+    if (animating) return;
     closePicker();
     flipped = !flipped;
     render();
@@ -321,7 +415,7 @@
     render();
   });
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
+    if (e.key === 'Escape' && !animating) {
       closePicker();
       selectedId = null;
       render();
