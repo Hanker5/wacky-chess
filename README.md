@@ -69,8 +69,13 @@ other either. Each one is a separate game.
    git checkout -b match/2026-10-23-black      # or -white
    git push -u origin match/2026-10-23-black
    ```
-3. **Design in secret.** Tell your AI agent which color you are. It reads
-   `AGENTS.md` and `docs/PIECE_API.md`, then works only in `sides/<color>/`. Check
+3. **Design in secret.** Run `npm start` and open
+   **http://localhost:8000/designer.html** to sketch your side: make piece cards, pick
+   emojis, describe what each piece does in plain English, ask for custom art, and drag
+   pieces onto your starting rows. Saving writes `sides/<color>/design.json`. Then tell
+   your AI agent which color you are and ask it to build your design. It reads
+   `AGENTS.md` and `docs/PIECE_API.md`, asks you questions about each piece, then works
+   only in `sides/<color>/`. (You can also skip the designer and describe pieces in chat.) Check
    the work with `node tools/check.js <color>` (it fuzzes random games looking for
    crashes) and play-test with `npm start`. Commit and push to your player
    branch as you go. Don't look at the other player's branch.

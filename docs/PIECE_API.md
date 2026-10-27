@@ -3,6 +3,11 @@
 Everything a side needs goes in **one file**: `sides/<color>/pieces.js`. Images, if
 you want any, go in `sides/<color>/assets/`.
 
+The side folder may also hold `design.json`, the player's sketch from the piece
+designer (`designer.html`). It's a design input for whoever writes `pieces.js`, kept
+in sync with it by the player's agent (see "Building from a design" in `AGENTS.md`).
+The engine never reads it.
+
 - [The side file](#the-side-file)
 - [Piece definitions](#piece-definitions)
 - [Moves](#moves)

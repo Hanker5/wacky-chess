@@ -57,6 +57,7 @@ header {
 }
 
 h1 { margin: 0; font-size: 1.6rem; letter-spacing: 0.02em; }
+.header-link { margin-left: auto; color: var(--accent); }
 h2 { margin: 0 0 6px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
 
 .status { font-size: 1.1rem; font-weight: 600; }
