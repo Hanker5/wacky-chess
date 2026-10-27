@@ -114,5 +114,6 @@
 }
 .designer .emoji-grid button { font-size: 24px; line-height: 1; padding: 6px 0; border: 0; background: none; border-radius: 6px; }
 .designer .emoji-grid button:hover, .designer .emoji-grid button:focus-visible { background: var(--border); }
+.designer .emoji-grid .glyph { font-variant-emoji: text; font-family: "Segoe UI Symbol", "DejaVu Sans", "Noto Sans Symbols 2", serif; color: var(--ink); }
 .emoji-note { color: var(--muted); font-size: 0.85rem; }
 .emoji-note:empty { display: none; }

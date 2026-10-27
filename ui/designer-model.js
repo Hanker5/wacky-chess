@@ -13,6 +13,16 @@
   const ROWS = 3;
   const SIZE = 8;
   const KEY_RE = /^[A-Za-z_][A-Za-z0-9_-]*$/;
+  // The plain-chess template's icons: text symbols the game draws in the token's color,
+  // which the emoji set doesn't have (its only chess piece is the color ♟️ emoji).
+  const CHESS_GLYPHS = [
+    ['♚', 'chess king', 'chess piece'],
+    ['♛', 'chess queen', 'chess piece'],
+    ['♜', 'chess rook', 'castle chess piece'],
+    ['♝', 'chess bishop', 'chess piece'],
+    ['♞', 'chess knight', 'horse chess piece'],
+    ['♟', 'chess pawn', 'chess piece'],
+  ];
 
   const emptyRow = () => new Array(SIZE).fill(null);
   const str = (value) => (typeof value === 'string' ? value : '');
@@ -150,7 +160,7 @@
   }
 
   const api = {
-    KEY_RE, ROWS, SIZE,
+    KEY_RE, ROWS, SIZE, CHESS_GLYPHS,
     slugKey, emptyDesign, normalizeDesign, designFromSide,
     addPiece, removePiece, rekeyPiece, setCell, isPlaced, warnings, searchEmoji,
   };

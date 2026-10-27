@@ -153,3 +153,12 @@ test('searchEmoji ignores case in the data and ranks whole words above substring
   assert.deepEqual(emojis('king'), ['🤴', '👑', '😉']);
   assert.deepEqual(emojis('japan'), ['🗾', '🍙']);
 });
+
+test('the picker offers the template chess glyphs first, searchable by name', () => {
+  assert.deepEqual(D.CHESS_GLYPHS.map(([g]) => g), ['♚', '♛', '♜', '♝', '♞', '♟']);
+  const list = D.CHESS_GLYPHS.concat([['🤴', 'prince', 'king crown'], ['♟️', 'chess pawn', 'chess dupe expendable']]);
+  assert.equal(D.searchEmoji(list, 'queen')[0][0], '♛');
+  assert.equal(D.searchEmoji(list, 'king')[0][0], '♚');
+  assert.deepEqual(D.searchEmoji(list, 'pawn').map(([e]) => e), ['♟', '♟️']);
+  assert.deepEqual(D.searchEmoji(list, '', 6).map(([e]) => e), ['♚', '♛', '♜', '♝', '♞', '♟']);
+});

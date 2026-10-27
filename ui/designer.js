@@ -102,9 +102,9 @@
       onPick(emoji);
     };
     const show = () => {
-      hits = D.searchEmoji(window.WackyEmoji || [], search.value);
+      hits = D.searchEmoji(D.CHESS_GLYPHS.concat(window.WackyEmoji || []), search.value);
       grid.replaceChildren(...hits.map(([emoji, label]) => {
-        const b = el('button', '', emoji);
+        const b = el('button', /^[\u2654-\u265F]$/.test(emoji) ? 'glyph' : '', emoji);
         b.type = 'button';
         b.title = label;
         b.addEventListener('click', () => choose(emoji));
