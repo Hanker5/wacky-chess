@@ -53,7 +53,7 @@ test('setCell and isPlaced track placements', () => {
 });
 
 test('normalizeDesign repairs short or stale files', () => {
-  const raw = { pieces: [{ key: 'a', name: 'A', royal: 1 }, { key: 'a' }, { key: '9bad' }, { key: 'b', customArt: { description: 7 } }], setup: [['a', 'ghost']] };
+  const raw = { pieces: [{ key: 'a', name: 'A', royal: 1 }, { key: 'b', customArt: { description: 7 } }], setup: [['a', 'ghost']] };
   const d = D.normalizeDesign('white', raw);
   assert.deepEqual(d.pieces.map((p) => p.key), ['a', 'b']);
   assert.deepEqual(d.pieces[0], { key: 'a', name: 'A', icon: '', royal: true, description: '', customArt: null });
@@ -127,4 +127,29 @@ test('rekeyPiece renames a key and its placements', () => {
   assert.equal(d.setup[2][3], 'goblin_king_2');
   assert.equal(d.setup[0][0], 'goblin_king_2');
   assert.equal(D.rekeyPiece(d, 'goblin_king_2', 'Goblin King'), 'goblin_king_2');
+});
+
+test('normalizeDesign re-keys pieces with a missing, invalid, or repeated key instead of dropping them', () => {
+  const raw = { pieces: [{ key: 'a', name: 'A' }, { key: 'a', name: 'Also A' }, { key: '9bad' }, { name: 'Frog' }, null], setup: [['a', '9bad']] };
+  const d = D.normalizeDesign('white', raw);
+  assert.deepEqual(d.pieces.map((p) => p.key), ['a', 'also_a', '_9bad', 'frog']);
+  for (const p of d.pieces) assert.match(p.key, D.KEY_RE);
+  assert.equal(d.setup[0][0], 'a');
+  assert.equal(d.setup[0][1], null);
+});
+
+test('searchEmoji ignores case in the data and ranks whole words above substrings', () => {
+  const list = [
+    ['😉', 'winking face', 'face wink'],
+    ['🍙', 'rice ball', 'Japanese ball rice'],
+    ['👑', 'crown', 'clothing king queen'],
+    ['🗾', 'map of Japan', 'Japan map'],
+    ['🤴', 'King', 'monarch'],
+    ['🇿🇼', 'flag: Zimbabwe', 'ZW flag'],
+  ];
+  const emojis = (q) => D.searchEmoji(list, q).map(([e]) => e);
+  assert.deepEqual(emojis('zimbabwe'), ['🇿🇼']);
+  assert.deepEqual(emojis('ZW'), ['🇿🇼']);
+  assert.deepEqual(emojis('king'), ['🤴', '👑', '😉']);
+  assert.deepEqual(emojis('japan'), ['🗾', '🍙']);
 });

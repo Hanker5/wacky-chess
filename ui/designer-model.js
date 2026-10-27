@@ -48,11 +48,14 @@
     const pieces = [];
     const keys = new Set();
     for (const p of Array.isArray(d.pieces) ? d.pieces : []) {
-      if (!p || typeof p.key !== 'string' || !KEY_RE.test(p.key) || keys.has(p.key)) continue;
-      keys.add(p.key);
+      if (!p || typeof p !== 'object') continue;
+      // A missing, invalid, or repeated key gets a fresh one rather than losing the piece.
+      const key = typeof p.key === 'string' && KEY_RE.test(p.key) && !keys.has(p.key)
+        ? p.key : slugKey(str(p.name) || str(p.key), keys);
+      keys.add(key);
       const art = p.customArt && typeof p.customArt === 'object' ? { description: str(p.customArt.description) } : null;
       pieces.push({
-        key: p.key,
+        key,
         name: str(p.name),
         icon: str(p.icon),
         royal: !!p.royal,
@@ -123,18 +126,27 @@
     return out;
   }
 
+  // How well an entry's first-term match reads: 0 the label starts with it, 1 a word in
+  // the label does, 2 a word in the tags does, 3 it's only inside a word.
+  function rank(label, tags, term) {
+    if (label.startsWith(term)) return 0;
+    const word = (text) => text.split(/[\s:,-]+/).some((w) => w.startsWith(term));
+    if (word(label)) return 1;
+    return word(tags) ? 2 : 3;
+  }
+
   // list entries are [emoji, label, tags] with tags space-separated.
   function searchEmoji(list, query, limit = 240) {
     const terms = str(query).toLowerCase().split(/\s+/).filter(Boolean);
     if (!terms.length) return list.slice(0, limit);
-    const first = [];
-    const rest = [];
+    const tiers = [[], [], [], []];
     for (const entry of list) {
-      const text = `${entry[1]} ${entry[2]}`;
-      if (!terms.every((t) => text.includes(t))) continue;
-      (entry[1].startsWith(terms[0]) ? first : rest).push(entry);
+      const label = entry[1].toLowerCase();
+      const tags = entry[2].toLowerCase();
+      const text = `${label} ${tags}`;
+      if (terms.every((t) => text.includes(t))) tiers[rank(label, tags, terms[0])].push(entry);
     }
-    return first.concat(rest).slice(0, limit);
+    return tiers.flat().slice(0, limit);
   }
 
   const api = {

@@ -19,6 +19,8 @@
   let freshKeys = new Set(); // pieces added since the last load/save: their key follows their name
   let dragging = null; // { key } from a card, or { key, row, col } from the board
   let statusTimer = null;
+  let saving = false;
+  let conflictNotice = null;
 
   const api = async (url, options) => {
     const res = await fetch(url, options);
@@ -387,7 +389,15 @@
     renderAll();
   }
 
+  function clearConflict() {
+    if (conflictNotice) conflictNotice.remove();
+    conflictNotice = null;
+  }
+
   async function save(force) {
+    if (saving) return; // a second click would carry the same version and look like a conflict
+    saving = true;
+    clearConflict();
     let res;
     try {
       res = await api(`/api/design/${side}`, {
@@ -398,6 +408,8 @@
     } catch (err) {
       setStatus("Couldn't reach the server. Is npm start still running?", true);
       return;
+    } finally {
+      saving = false;
     }
     if (res.status === 200) {
       version = res.body.version;
@@ -405,9 +417,9 @@
       dirty = false;
       setStatus(`Saved to sides/${side}/design.json`);
     } else if (res.status === 409) {
-      const box = banner('error', 'This design changed on disk since you opened it, probably by your agent.', [
-        ['Reload', () => { box.remove(); load(); }],
-        ['Overwrite', () => { box.remove(); save(true); }],
+      conflictNotice = banner('error', 'This design changed on disk since you opened it, probably by your agent.', [
+        ['Reload', () => { clearConflict(); load(); }],
+        ['Overwrite', () => save(true)],
       ]);
       setStatus('Not saved', true);
     } else {

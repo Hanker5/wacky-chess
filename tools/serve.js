@@ -31,7 +31,18 @@ const TYPES = {
   '.webp': 'image/webp',
 };
 
+// Only answer requests addressed to this machine by name. Another website that points
+// its own hostname at 127.0.0.1 (DNS rebinding) gets nothing.
+function localHost(req) {
+  const port = req.socket.localPort;
+  return ['localhost', '127.0.0.1', `localhost:${port}`, `127.0.0.1:${port}`].includes(req.headers.host);
+}
+
 const createServer = (root = ROOT) => http.createServer((req, res) => {
+  if (!localHost(req)) {
+    res.writeHead(403).end('Forbidden: open the game at http://localhost');
+    return;
+  }
   let urlPath;
   try {
     urlPath = decodeURIComponent(new URL(req.url, 'http://localhost').pathname);

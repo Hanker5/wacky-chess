@@ -170,3 +170,44 @@ test('unknown /api path is 404 and static files still serve', async () => {
     assert.equal(await res.text(), '// hi\n');
   });
 });
+
+// Raw request so the test can set Host, which fetch won't let us override.
+const http = require('node:http');
+function raw(base, { method = 'GET', path: p, host, type, body }) {
+  const { port } = new URL(base);
+  return new Promise((resolve, reject) => {
+    const headers = { Host: host || `localhost:${port}` };
+    if (type) headers['Content-Type'] = type;
+    const req = http.request({ host: '127.0.0.1', port, method, path: p, headers }, (res) => {
+      res.resume();
+      res.on('end', () => resolve(res.statusCode));
+    });
+    req.on('error', reject);
+    req.end(body);
+  });
+}
+
+test('requests for a foreign Host are refused (DNS rebinding)', async () => {
+  await withServer('ref: refs/heads/main\n', async ({ root, base }) => {
+    fs.writeFileSync(path.join(root, 'sides', 'white', 'pieces.js'), '// hi\n');
+    const body = JSON.stringify({ force: true, design: design('white') });
+    assert.equal(await raw(base, { path: '/api/branch', host: 'evil.example:8000' }), 403);
+    assert.equal(await raw(base, { path: '/sides/white/pieces.js', host: 'evil.example' }), 403);
+    assert.equal(await raw(base, { method: 'POST', path: '/api/design/white', host: 'evil.example', type: 'application/json', body }), 403);
+    assert.ok(!fs.existsSync(path.join(root, 'sides', 'white', 'design.json')));
+    const { port } = new URL(base);
+    for (const host of [`localhost:${port}`, `127.0.0.1:${port}`, 'localhost']) {
+      assert.equal(await raw(base, { path: '/sides/white/pieces.js', host }), 200, host);
+    }
+  });
+});
+
+test('a save that is not application/json is refused (cross-site form or text/plain POST)', async () => {
+  await withServer('ref: refs/heads/main\n', async ({ root, base }) => {
+    const body = JSON.stringify({ force: true, design: design('white') });
+    assert.equal(await raw(base, { method: 'POST', path: '/api/design/white', type: 'text/plain', body }), 415);
+    assert.equal(await raw(base, { method: 'POST', path: '/api/design/white', type: 'application/x-www-form-urlencoded', body }), 415);
+    assert.ok(!fs.existsSync(path.join(root, 'sides', 'white', 'design.json')));
+    assert.equal(await raw(base, { method: 'POST', path: '/api/design/white', type: 'application/json; charset=utf-8', body }), 200);
+  });
+});

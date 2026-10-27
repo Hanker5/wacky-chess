@@ -7,7 +7,8 @@
  *
  * It only ever writes sides/white/design.json or sides/black/design.json. A save is
  * refused (409) if the file changed since the page loaded it, e.g. because the
- * player's agent rewrote it, unless the page sends force: true.
+ * player's agent rewrote it, unless the page sends force: true. Saves must be
+ * application/json, so other websites can't post here.
  */
 'use strict';
 const crypto = require('node:crypto');
@@ -63,7 +64,12 @@ function readBody(req, done) {
 }
 
 function saveDesign(req, res, color, file) {
-  readBody(req, (text) => {
+  // A cross-site form or text/plain fetch can't set this without a CORS preflight,
+  // which this server never approves.
+  if (!/^application\/json\b/i.test(req.headers['content-type'] || '')) {
+    return send(res, 415, { error: 'Send the design as application/json.' });
+  }
+  return readBody(req, (text) => {
     if (text === null) return send(res, 413, { error: `Design is too big (over ${MAX_BODY} bytes).` });
     let body;
     try {
