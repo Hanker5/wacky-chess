@@ -6,12 +6,14 @@
  *
  * Opening index.html straight from disk breaks in sandboxed browsers (Flatpak/Snap
  * Firefox or Chrome): they're handed only that one file, not engine/, ui/, or sides/.
- * Serving the folder over http://localhost avoids that.
+ * Serving the folder over http://localhost avoids that. It also serves the small
+ * /api/ that designer.html saves through (see tools/design-api.js).
  */
 'use strict';
 const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
+const { handleApi } = require('./design-api.js');
 
 const ROOT = path.join(__dirname, '..');
 const PORT = Number(process.argv[2] || process.env.PORT || 8000);
@@ -29,7 +31,7 @@ const TYPES = {
   '.webp': 'image/webp',
 };
 
-const server = http.createServer((req, res) => {
+const createServer = (root = ROOT) => http.createServer((req, res) => {
   let urlPath;
   try {
     urlPath = decodeURIComponent(new URL(req.url, 'http://localhost').pathname);
@@ -37,8 +39,12 @@ const server = http.createServer((req, res) => {
     res.writeHead(400).end('Bad request');
     return;
   }
-  const file = path.join(ROOT, urlPath.endsWith('/') ? `${urlPath}index.html` : urlPath);
-  if (!file.startsWith(ROOT + path.sep) || file.includes(`${path.sep}.git${path.sep}`)) {
+  if (urlPath.startsWith('/api/')) {
+    handleApi(req, res, root);
+    return;
+  }
+  const file = path.join(root, urlPath.endsWith('/') ? `${urlPath}index.html` : urlPath);
+  if (!file.startsWith(root + path.sep) || file.includes(`${path.sep}.git${path.sep}`)) {
     res.writeHead(403).end('Forbidden');
     return;
   }
@@ -56,14 +62,19 @@ const server = http.createServer((req, res) => {
   });
 });
 
-server.on('error', (err) => {
-  if (err.code === 'EADDRINUSE') {
-    console.error(`Port ${PORT} is busy. Try: node tools/serve.js ${PORT + 1}`);
-    process.exit(1);
-  }
-  throw err;
-});
+module.exports = { createServer };
 
-server.listen(PORT, '127.0.0.1', () => {
-  console.log(`Wacky Chess is running at http://localhost:${PORT}/  (Ctrl+C to stop)`);
-});
+if (require.main === module) {
+  const server = createServer();
+  server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.error(`Port ${PORT} is busy. Try: node tools/serve.js ${PORT + 1}`);
+      process.exit(1);
+    }
+    throw err;
+  });
+  server.listen(PORT, '127.0.0.1', () => {
+    console.log(`Wacky Chess is running at http://localhost:${PORT}/  (Ctrl+C to stop)`);
+    console.log(`Design a side at http://localhost:${PORT}/designer.html`);
+  });
+}
