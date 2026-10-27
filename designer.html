@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wacky Chess Designer</title>
+  <link rel="stylesheet" href="ui/style.css">
+  <link rel="stylesheet" href="ui/designer.css">
+</head>
+<body class="designer">
+  <header>
+    <h1>Piece Designer</h1>
+    <div id="side-label" class="status"></div>
+    <div class="header-right">
+      <span id="branch" class="branch"></span>
+      <a href="index.html">Back to the game</a>
+      <button id="save" type="button" class="primary" hidden>Save</button>
+      <span id="save-status" class="save-status" role="status"></span>
+    </div>
+  </header>
+
+  <!-- Removed by ui/designer.js once it can reach the server. If it stays, the scripts never loaded. -->
+  <div id="boot" class="boot">
+    <p><strong>Loading…</strong></p>
+    <p>If this message doesn't go away, your browser couldn't load the designer's files.
+      That usually means designer.html was opened straight from disk in a sandboxed (Flatpak or Snap) browser,
+      which only gets that one file.</p>
+    <p>Instead, run <code>npm start</code> in the game folder and open
+      <a href="http://localhost:8000/designer.html">http://localhost:8000/designer.html</a>.</p>
+  </div>
+
+  <div id="banners" class="notices"></div>
+
+  <section id="choose" class="choose" hidden>
+    <p>Which side are you designing?</p>
+    <button type="button" data-side="white">Design White</button>
+    <button type="button" data-side="black">Design Black</button>
+  </section>
+
+  <main id="workspace" hidden>
+    <section class="cards-col">
+      <label class="side-name">Side name
+        <input id="side-name" type="text" placeholder="The Goblin Horde" autocomplete="off">
+      </label>
+      <div id="cards" class="cards"></div>
+      <button id="add-piece" type="button">+ New piece</button>
+      <ul id="warnings" class="warnings"></ul>
+    </section>
+
+    <section class="board-col">
+      <h2>Starting setup</h2>
+      <div id="board" class="board design-board" aria-label="Starting setup"></div>
+      <p class="hint">Drag a piece's icon onto your three starting rows. Drag a piece on the board to move it, or off the board to remove it.</p>
+    </section>
+  </main>
+
+  <script src="engine/engine.js"></script>
+  <script src="ui/designer-model.js"></script>
+  <script src="ui/emoji-data.js"></script>
+  <script src="ui/designer.js"></script>
+</body>
+</html>
