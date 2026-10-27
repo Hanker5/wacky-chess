@@ -117,3 +117,14 @@ test('searchEmoji matches every term across label and tags, label-prefix first',
   assert.deepEqual(emojis('', 2), ['🍄', '🐸']);
   assert.deepEqual(emojis('zzz'), []);
 });
+
+test('rekeyPiece renames a key and its placements', () => {
+  const d = { ...D.emptyDesign('white'), pieces: [piece('new_piece'), piece('goblin_king')] };
+  d.setup[2][3] = 'new_piece';
+  d.setup[0][0] = 'new_piece';
+  assert.equal(D.rekeyPiece(d, 'new_piece', 'Goblin King'), 'goblin_king_2');
+  assert.deepEqual(d.pieces.map((p) => p.key), ['goblin_king_2', 'goblin_king']);
+  assert.equal(d.setup[2][3], 'goblin_king_2');
+  assert.equal(d.setup[0][0], 'goblin_king_2');
+  assert.equal(D.rekeyPiece(d, 'goblin_king_2', 'Goblin King'), 'goblin_king_2');
+});

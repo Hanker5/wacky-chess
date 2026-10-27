@@ -86,6 +86,16 @@
     design.setup = design.setup.map((row) => row.map((k) => (k === key ? null : k)));
   }
 
+  // Give a piece the key its name would get now, moving its placements along. Only for
+  // pieces nothing else knows about yet: once a key is saved and built, it must stay.
+  function rekeyPiece(design, key, name) {
+    const fresh = slugKey(name, design.pieces.filter((p) => p.key !== key).map((p) => p.key));
+    if (fresh === key) return key;
+    for (const p of design.pieces) if (p.key === key) p.key = fresh;
+    design.setup = design.setup.map((row) => row.map((k) => (k === key ? fresh : k)));
+    return fresh;
+  }
+
   function setCell(design, row, col, key) {
     design.setup[row][col] = key;
   }
@@ -130,7 +140,7 @@
   const api = {
     KEY_RE, ROWS, SIZE,
     slugKey, emptyDesign, normalizeDesign, designFromSide,
-    addPiece, removePiece, setCell, isPlaced, warnings, searchEmoji,
+    addPiece, removePiece, rekeyPiece, setCell, isPlaced, warnings, searchEmoji,
   };
   root.WackyDesigner = api;
   if (typeof module === 'object' && module.exports) module.exports = api;
