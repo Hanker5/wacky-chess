@@ -71,8 +71,73 @@
 
   const pieceByKey = (key) => design.pieces.find((p) => p.key === key);
 
-  // Replaced by the real picker in the emoji picker task.
-  function openEmojiPicker(anchor, onPick) {}
+  // ------------------------------------------------------------- emoji picker
+
+  let picker = null; // { box, anchor }
+
+  function closePicker() {
+    if (!picker) return;
+    picker.box.remove();
+    picker = null;
+  }
+
+  function openEmojiPicker(anchor, onPick) {
+    const reopening = picker && picker.anchor === anchor;
+    closePicker();
+    if (reopening) return;
+    const box = el('div', 'emoji-picker');
+    box.setAttribute('role', 'dialog');
+    box.setAttribute('aria-label', 'Pick an emoji');
+    const search = el('input');
+    search.type = 'search';
+    search.placeholder = 'Search emoji, or paste one and press Enter';
+    const grid = el('div', 'emoji-grid');
+    const note = el('div', 'emoji-note');
+    let hits = [];
+
+    const choose = (emoji) => {
+      closePicker();
+      onPick(emoji);
+    };
+    const show = () => {
+      hits = D.searchEmoji(window.WackyEmoji || [], search.value);
+      grid.replaceChildren(...hits.map(([emoji, label]) => {
+        const b = el('button', '', emoji);
+        b.type = 'button';
+        b.title = label;
+        b.addEventListener('click', () => choose(emoji));
+        return b;
+      }));
+      note.textContent = hits.length || !search.value.trim() ? '' : 'No match. Press Enter to use what you typed as the icon.';
+    };
+    search.addEventListener('input', show);
+    search.addEventListener('keydown', (e) => {
+      const text = search.value.trim();
+      if (e.key === 'Enter' && text) {
+        e.preventDefault();
+        choose(hits.length ? hits[0][0] : text);
+      }
+    });
+    box.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closePicker();
+        anchor.focus();
+      }
+    });
+
+    box.append(search, grid, note);
+    document.body.append(box);
+    const r = anchor.getBoundingClientRect();
+    box.style.left = `${Math.max(8, Math.min(r.left + scrollX, scrollX + innerWidth - box.offsetWidth - 8))}px`;
+    box.style.top = `${r.bottom + scrollY + 6}px`;
+    picker = { box, anchor };
+    show();
+    search.focus();
+  }
+
+  document.addEventListener('mousedown', (e) => {
+    if (picker && !picker.box.contains(e.target) && !picker.anchor.contains(e.target)) closePicker();
+  });
 
   // ------------------------------------------------------------- cards
 

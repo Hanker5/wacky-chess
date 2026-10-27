@@ -44,7 +44,7 @@
   .designer main { grid-template-columns: 1fr; }
 }
 
-.designer input[type="text"], .designer textarea {
+.designer input[type="text"], .designer input[type="search"], .designer textarea {
   font: inherit;
   color: var(--ink);
   background: var(--panel);
@@ -93,3 +93,26 @@
 @media (max-width: 820px) {
   .board-col { position: static; }
 }
+
+.emoji-picker {
+  position: absolute;
+  z-index: 20;
+  width: min(360px, calc(100vw - 16px));
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  padding: 8px;
+}
+.designer .emoji-picker input { width: 100%; }
+.emoji-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(38px, 1fr));
+  max-height: 260px;
+  overflow-y: auto;
+  margin-top: 8px;
+}
+.designer .emoji-grid button { font-size: 24px; line-height: 1; padding: 6px 0; border: 0; background: none; border-radius: 6px; }
+.designer .emoji-grid button:hover, .designer .emoji-grid button:focus-visible { background: var(--border); }
+.emoji-note { color: var(--muted); font-size: 0.85rem; }
+.emoji-note:empty { display: none; }
