@@ -168,6 +168,7 @@ test('effects are queued per move, validated, and undone with the move', () => {
     moves: (p, g) => [{ x: p.x, y: p.y + 3, label: 'Zap', action(p, g, m) {
       g.effect('projectile', { from: [p.x, p.y], to: [m.x, m.y], icon: '⚡' });
       g.effect('burst', { x: m.x, y: m.y });
+      g.effect('move', { from: [p.x, p.y], to: [m.x, m.y] });
     } }],
   };
   const g = new W.Game({ white: side({ zapper }, [rowWith({ 0: 'zapper', 4: 'king' })]), black: side() });
@@ -176,14 +177,16 @@ test('effects are queued per move, validated, and undone with the move', () => {
   assert.deepEqual(g.effects, [
     { kind: 'projectile', icon: '⚡', color: '', from: [0, 0], to: [0, 3] },
     { kind: 'burst', icon: '', color: '', x: 0, y: 3, radius: 1 },
+    { kind: 'move', icon: '', color: '', from: [0, 0], to: [0, 3] },
   ]);
   moveTo(g, find(g, 'black', 'king'), 3, 6);
   assert.deepEqual(g.effects, [], 'a move without effects clears the last ones');
   g.undo();
-  assert.equal(g.effects.length, 2);
+  assert.equal(g.effects.length, 3);
 
   assert.throws(() => g.effect('confetti'), /unknown kind "confetti"/);
   assert.throws(() => g.effect('projectile', { from: [0, 0], to: [8, 0] }), /to must be an on-board/);
+  assert.throws(() => g.effect('move', { from: [0, 0] }), /to must be an on-board/);
   assert.throws(() => g.effect('burst', { x: 1, y: 1, radius: 1.5 }), /radius/);
   assert.throws(() => g.effect('burst', { x: 1, y: 1, icon: 5 }), /icon must be a string/);
 });
