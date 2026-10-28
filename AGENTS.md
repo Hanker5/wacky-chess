@@ -21,6 +21,7 @@ Every match lives on its own branches, and `main` is only the base template. (Se
   match into `main`.**
 - `match/<name>` is one match, with both finished sides merged together.
 - `match/<name>-white` / `match/<name>-black` is where each player designs their side.
+  These are temporary: once the match starts, they're merged in and deleted.
 
 Before writing any piece code, run `git branch --show-current`:
 
@@ -34,12 +35,36 @@ Before writing any piece code, run `git branch --show-current`:
   git checkout -b match/<name>-<your color>
   git push -u origin match/<name>-<your color>
   ```
-- **On the other color's branch, or on `match/<name>` itself**: stop and ask.
-  Don't design there.
+- **On the other color's branch**: stop and ask. Don't design there.
+- **On `match/<name>` itself**: if its player branches still exist, the match hasn't
+  started. Stop and ask, and don't design there. If they're gone, the match has
+  started: fixes to your side go right here (see below).
 
 Commit and push to your player branch as you go. Merging the two player branches
 into `match/<name>` happens when both players are done. Do that only when your
 player asks.
+
+### After the match starts: clean up the player branches
+
+Once both sides are merged into `match/<name>` and the match has started, the player
+branches have done their job. They can be merged in and removed, so the repo doesn't
+fill up with branches. Since this deletes branches on GitHub, confirm with your player
+first. Then, for each of `match/<name>-white` and `match/<name>-black`:
+
+```sh
+git fetch --prune
+git checkout match/<name> && git pull
+git merge origin/match/<name>-<color>        # only if it has commits the match lacks
+git push
+# Delete only once this prints "merged":
+git merge-base --is-ancestor origin/match/<name>-<color> match/<name> && echo merged
+git branch -d match/<name>-<color>            # if you have it locally
+git push origin --delete match/<name>-<color>
+```
+
+After that, small fixes to your side go straight onto `match/<name>`. Pull first,
+edit only `sides/<your color>/`, run `node tools/check.js <your color>`, then commit
+and push. The secrecy rule is over by then, since the sides are merged and visible.
 
 ## Hard rules
 
