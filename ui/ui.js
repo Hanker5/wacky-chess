@@ -323,6 +323,47 @@
     return anim.finished.then(() => node.remove());
   }
 
+  // Slide the token shown on `from` to `to`. Whatever token is shown on `to` vanishes when it
+  // arrives. `shown` tracks where tokens appear after earlier slides in the same move.
+  function playMove(layer, shown, fx) {
+    const shownAt = ([x, y]) => {
+      const key = `${x},${y}`;
+      if (shown.has(key)) return shown.get(key);
+      return $('board').querySelector(`.sq[data-x="${x}"][data-y="${y}"] > .token`);
+    };
+    let node = shownAt(fx.from);
+    if (!node) return Promise.resolve();
+    const a = squareBox(fx.from[0], fx.from[1]);
+    const b = squareBox(fx.to[0], fx.to[1]);
+    if (!node.classList.contains('fx-move')) {
+      const token = node;
+      node = el('div', 'fx-move');
+      node.append(token.cloneNode(true));
+      node.style.width = node.style.height = `${a.size}px`;
+      node.style.left = `${a.cx}px`;
+      node.style.top = `${a.cy}px`;
+      token.style.visibility = 'hidden';
+      layer.append(node);
+    }
+    const squares = Math.max(Math.abs(fx.to[0] - fx.from[0]), Math.abs(fx.to[1] - fx.from[1]));
+    const anim = node.animate([
+      { transform: 'translate(-50%, -50%)' },
+      { transform: `translate(calc(-50% + ${b.cx - a.cx}px), calc(-50% + ${b.cy - a.cy}px))` },
+    ], { duration: Math.min(900, 60 + squares * 110), easing: 'linear' });
+    return anim.finished.then(() => {
+      node.style.left = `${b.cx}px`;
+      node.style.top = `${b.cy}px`;
+      anim.cancel();
+      const under = shownAt(fx.to);
+      if (under && under !== node) {
+        if (under.classList.contains('fx-move')) under.remove();
+        else under.style.visibility = 'hidden';
+      }
+      shown.set(`${fx.from[0]},${fx.from[1]}`, null);
+      shown.set(`${fx.to[0]},${fx.to[1]}`, node);
+    });
+  }
+
   // Play the move's effects one after another over the board as it was before the move.
   async function playEffects(effects) {
     const board = $('board');
@@ -330,9 +371,11 @@
     board.querySelectorAll('.selected').forEach((n) => n.classList.remove('selected'));
     const layer = el('div', 'fx-layer');
     board.parentElement.append(layer);
+    const shown = new Map();
     try {
       for (const fx of effects) {
-        await (fx.kind === 'projectile' ? playProjectile(layer, fx) : playBurst(layer, fx));
+        if (fx.kind === 'move') await playMove(layer, shown, fx);
+        else await (fx.kind === 'projectile' ? playProjectile(layer, fx) : playBurst(layer, fx));
       }
     } finally {
       layer.remove();
