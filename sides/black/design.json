@@ -40,7 +40,7 @@
       "name": "Knight",
       "icon": "♞",
       "royal": false,
-      "description": "Looks and moves exactly like a Knight (jumps in an L shape, over anything in the way). Secretly a Kamikaze-Knight! On any turn, instead of moving, it can Self-destruct 💥: it and every piece in the 3×3 square around it are destroyed, friend or foe, Kings included. (If both Kings go, it's a draw.) Being captured does not set it off.",
+      "description": "Looks and moves exactly like a Knight (jumps in an L shape, over anything in the way). Secretly a Kamikaze-Knight! On your turn, instead of moving, select it and click it again to Self-destruct 💥: it and every piece in the 3×3 square around it are destroyed, friend or foe, Kings included. (If both Kings go, it's a draw.) Being captured does not set it off.",
       "customArt": null
     },
     {

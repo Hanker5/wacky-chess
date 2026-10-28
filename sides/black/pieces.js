@@ -32,11 +32,11 @@
     }
   }
 
-  // Secret abilities ride along on the piece's normal move squares, so an enemy's move
-  // preview looks exactly like a plain piece's. Falls back to the piece's own square.
-  function hideOnSquares(p, normalMoves, secret) {
-    const spots = normalMoves.length ? normalMoves : [{ x: p.x, y: p.y }];
-    return spots.map(({ x, y }) => ({ ...secret, x, y }));
+  // Secret abilities are used by clicking the selected piece again. They're only offered on
+  // the owner's turn, so the opponent's move preview (made on their turn) looks ordinary.
+  function withSecret(p, g, normalMoves, secret) {
+    if (g.turn !== p.side) return normalMoves;
+    return [...normalMoves, { ...secret, x: p.x, y: p.y }];
   }
 
   // ---- 2009 Toyota Corolla
@@ -140,8 +140,7 @@
 
   // ---- Kamikaze-Knight
   function kamikazeMoves(p, g) {
-    const jumps = g.leap(p, g.DIRS.KNIGHT);
-    return [...jumps, ...hideOnSquares(p, jumps, { label: 'Self-destruct 💥', action: explode })];
+    return withSecret(p, g, g.leap(p, g.DIRS.KNIGHT), { label: 'Self-destruct 💥', action: explode });
   }
   function explode(p, g) {
     g.log('💥 Surprise! That Knight was a Kamikaze-Knight!');
@@ -160,17 +159,13 @@
       name: 'Pawn',
       icon: '♟',
       description: `Looks and moves exactly like a Pawn: 1 forward (2 on its first move), captures diagonally forward, and becomes a Queen on the far rank. Secretly a ${trueName}! On your turn, select it and click it again to throw a smoke bomb and Reveal 💨, turning into a ${trueName} (${powers}). Revealing is free: you then take another turn with any piece.`,
-      // Reveal by clicking the selected Ninja again. It's only offered on Black's own turn,
-      // so the opponent's move preview (made on their turn) shows a plain Pawn.
       moves(p, g) {
-        const steps = pawnMoves(p, g);
-        if (g.turn !== p.side) return steps;
-        return [...steps, { x: p.x, y: p.y, label: 'Reveal 💨', action(p, g) {
+        return withSecret(p, g, pawnMoves(p, g), { label: 'Reveal 💨', action(p, g) {
           g.effect('burst', { x: p.x, y: p.y, radius: 0, icon: '💨', color: 'gray' });
           g.transform(p, trueType);
           g.log(`💨 Smoke bomb! That Pawn was a ${trueName}!`);
           g.extraTurn();
-        } }];
+        } });
       },
       onMove: promote,
     };
@@ -212,7 +207,7 @@
       knight: {
         name: 'Knight',
         icon: '♞',
-        description: 'Looks and moves exactly like a Knight (jumps in an L shape, over anything in the way). Secretly a Kamikaze-Knight! On any turn, instead of moving, it can Self-destruct 💥: it and every piece in the 3×3 square around it are destroyed, friend or foe, Kings included. (If both Kings go, it\'s a draw.) Being captured does not set it off.',
+        description: 'Looks and moves exactly like a Knight (jumps in an L shape, over anything in the way). Secretly a Kamikaze-Knight! On your turn, instead of moving, select it and click it again to Self-destruct 💥: it and every piece in the 3×3 square around it are destroyed, friend or foe, Kings included. (If both Kings go, it\'s a draw.) Being captured does not set it off.',
         moves: kamikazeMoves,
       },
       pawn: {
