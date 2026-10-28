@@ -46,8 +46,8 @@ game you've ever played stays playable later, with exactly the pieces it had.
 |---|---|
 | `main` | The template. Only engine, UI, docs, and tooling changes, and only when both players agree. Both `sides/` files stay plain chess. |
 | `match/<name>` | One match: both players' finished sides, merged together. Play the game from here. |
-| `match/<name>-white` | White's work in progress for that match. Only `sides/white/` changes. |
-| `match/<name>-black` | Black's work in progress for that match. Only `sides/black/` changes. |
+| `match/<name>-white` | White's work in progress for that match. Only `sides/white/` changes. Deleted once the match starts. |
+| `match/<name>-black` | Black's work in progress for that match. Only `sides/black/` changes. Deleted once the match starts. |
 
 `<name>` is the match date, like `match/2026-10-23`. Add a nickname if you want, like
 `match/2026-10-23-goblins`.
@@ -83,6 +83,10 @@ other either. Each one is a separate game.
    the match branch (a pull request into `match/2026-10-23` is easiest). The two
    players change different folders, so the merges are clean.
 5. **Play** from the match branch: `git checkout match/2026-10-23`, then `npm start`.
+6. **Clean up.** Once the match has started, the player branches have done their job.
+   Make sure each one is fully merged into the match branch, then delete it locally
+   and on GitHub (your agent can do this, see `AGENTS.md`). After that, tweaks to your
+   side go straight onto `match/2026-10-23`, still only in your own `sides/` folder.
 
 ### Changing the template
 
