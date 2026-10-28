@@ -1,0 +1,103 @@
+{
+  "version": 1,
+  "side": "white",
+  "name": "White",
+  "pieces": [
+    {
+      "key": "king",
+      "name": "King",
+      "icon": "♚",
+      "royal": true,
+      "description": "Moves one square in any direction. Lose all your royal pieces and you lose.",
+      "customArt": null
+    },
+    {
+      "key": "queen",
+      "name": "Flash",
+      "icon": "⚡️",
+      "royal": true,
+      "description": "Slides any distance in any direction, and may make one 45° or 90° turn partway through the move. It cannot move through pieces, and captures only on the square where its path ends.",
+      "customArt": null
+    },
+    {
+      "key": "rook",
+      "name": "Tank",
+      "icon": "💪",
+      "royal": false,
+      "description": "Moves one square in any of 8 directions, capturing as it goes. Instead of moving it can THROW an adjacent friendly piece onto any empty square within 5 squares of the Tank. It can never throw onto an occupied square or throw enemies. Or it can SMASH the ground, destroying every piece (friend or foe) in the 3x3 area around it; the Tank is safe. Smash has a 5-turn cooldown.",
+      "customArt": null
+    },
+    {
+      "key": "bishop",
+      "name": "Grenade Launcher",
+      "icon": "💣️",
+      "royal": false,
+      "description": "Moves like a pawn: 1 forward (2 on its first move) without capturing, and captures diagonally forward. It never promotes. Instead it can lob a grenade at any square exactly 1 to 3 squares away in a straight line (any of 8 directions, over pieces). The blast destroys every piece in the 3x3 area around the target, friend or foe, royals included, and the Launcher itself if it is in the blast. 5-turn cooldown.",
+      "customArt": null
+    },
+    {
+      "key": "knight",
+      "name": "Light",
+      "icon": "💡",
+      "royal": false,
+      "description": "Cannot move. Instead it can shine its light: a 50% chance that the opponent is blinded (cannot see the pieces on the board) for their next two turns. Using it takes your turn whether or not it works, and it can only be tried once every 10 of your turns. If the Light is captured the blindness ends.",
+      "customArt": null
+    },
+    {
+      "key": "pawn",
+      "name": "Pawn",
+      "icon": "♟",
+      "royal": false,
+      "description": "Moves 1 forward (2 on its first move), and captures forward and diagonally forward. Becomes a Flash on the far rank.",
+      "customArt": null
+    },
+    {
+      "key": "necromancer",
+      "name": "Necromancer",
+      "icon": "🪄",
+      "royal": false,
+      "description": "Moves one square in any direction. Once per game it can raise the dead: every EMPTY square in the 5x5 area around it fills with a Dead Body. Pieces already there are untouched, but they are hemmed in. Dead Bodies never move, block movement, and can be captured.",
+      "customArt": null
+    },
+    {
+      "key": "dead",
+      "name": "Dead Body",
+      "icon": "💀",
+      "royal": false,
+      "description": "Raised by the Necromancer. Never moves and blocks the square, but can be captured.",
+      "customArt": null
+    }
+  ],
+  "setup": [
+    [
+      "rook",
+      "queen",
+      "bishop",
+      "necromancer",
+      "king",
+      "bishop",
+      "knight",
+      "rook"
+    ],
+    [
+      "pawn",
+      "pawn",
+      "pawn",
+      "pawn",
+      "pawn",
+      "pawn",
+      "pawn",
+      "pawn"
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ]
+  ]
+}
