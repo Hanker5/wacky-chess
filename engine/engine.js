@@ -17,7 +17,7 @@
   const HOOKS = ['moves', 'onMove', 'onCapture', 'onCaptured', 'onTurnStart', 'badge'];
   const IMAGE_RE = /\.(png|jpe?g|gif|svg|webp)$/i;
   const MAX_MOVE_DEPTH = 4;
-  const EFFECTS = ['projectile', 'burst'];
+  const EFFECTS = ['projectile', 'burst', 'move'];
   const MAX_EFFECTS = 64;
 
   // Offsets are written from the moving piece's own seat: +y is "forward".
@@ -436,7 +436,7 @@
         if (opts[name] !== undefined && typeof opts[name] !== 'string') throw new Error(`effect: ${name} must be a string`);
       }
       const fx = { kind, icon: opts.icon || '', color: opts.color || '' };
-      if (kind === 'projectile') {
+      if (kind === 'projectile' || kind === 'move') {
         fx.from = where('from', opts.from);
         fx.to = where('to', opts.to);
       } else {

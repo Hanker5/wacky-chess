@@ -186,15 +186,22 @@ pure decoration: they never change the game, and they're ignored outside the bro
 ```js
 g.effect('projectile', { from: [x, y], to: [x, y], icon: '🥧' })     // an icon flies between two squares
 g.effect('burst', { x, y, radius: 1, icon: '✨', color: 'gold' })     // an expanding flash
+g.effect('move', { from: [x, y], to: [x, y] })                        // the piece itself slides over
 ```
 
 | Option | Kind | What it is |
 |--------|------|------------|
-| `from`, `to` | projectile | `[x, y]` squares. Required. |
+| `from`, `to` | projectile, move | `[x, y]` squares. Required. |
 | `x`, `y` | burst | The center square. Required. |
 | `radius` | burst | How far it reaches, in squares: `0` = one square, `1` (default) = the 3×3 area, and so on. |
-| `icon` | both | Emoji, text, or an image path. Optional. A projectile without one is a dot. |
-| `color` | both | Any CSS color. Optional (bursts default to orange). |
+| `icon` | projectile, burst | Emoji, text, or an image path. Optional. A projectile without one is a dot. |
+| `color` | projectile, burst | Any CSS color. Optional (bursts default to orange). |
+
+A `move` slides the actual piece token shown on `from` over to `to`, at a steady speed.
+Whatever token is shown on `to` vanishes when it arrives, so a piece can visibly run things
+over. Later effects in the same move see tokens where earlier slides left them, so you can
+chain slides square by square, with a burst at each stop. If no token is shown on `from`,
+the slide is skipped.
 
 After a move, the UI plays every effect that move queued, in order, over the board as it
 looked *before* the move. Then it shows the new position. That includes effects from
