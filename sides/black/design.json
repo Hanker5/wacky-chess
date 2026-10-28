@@ -56,7 +56,7 @@
       "name": "Pawn",
       "icon": "♟",
       "royal": false,
-      "description": "Looks and moves exactly like a Pawn: 1 forward (2 on its first move), captures diagonally forward, and becomes a Queen on the far rank. Secretly a Wizard! On any turn it can throw a smoke bomb and Reveal 💨, turning into a Wizard (step, fireball and teleport, both ready to use). Revealing is free: you then take another turn with any piece.",
+      "description": "Looks and moves exactly like a Pawn: 1 forward (2 on its first move), captures diagonally forward, and becomes a Queen on the far rank. Secretly a Wizard! On your turn, select it and click it again to throw a smoke bomb and Reveal 💨, turning into a Wizard (step, fireball and teleport, both ready to use). Revealing is free: you then take another turn with any piece.",
       "customArt": null
     },
     {
@@ -64,7 +64,7 @@
       "name": "Pawn",
       "icon": "♟",
       "royal": false,
-      "description": "Looks and moves exactly like a Pawn: 1 forward (2 on its first move), captures diagonally forward, and becomes a Queen on the far rank. Secretly a Kamikaze-Knight! On any turn it can throw a smoke bomb and Reveal 💨, turning into a Kamikaze-Knight (knight jumps and self-destruct). Revealing is free: you then take another turn with any piece.",
+      "description": "Looks and moves exactly like a Pawn: 1 forward (2 on its first move), captures diagonally forward, and becomes a Queen on the far rank. Secretly a Kamikaze-Knight! On your turn, select it and click it again to throw a smoke bomb and Reveal 💨, turning into a Kamikaze-Knight (knight jumps and self-destruct). Revealing is free: you then take another turn with any piece.",
       "customArt": null
     },
     {
@@ -72,7 +72,7 @@
       "name": "Pawn",
       "icon": "♟",
       "royal": false,
-      "description": "Looks and moves exactly like a Pawn: 1 forward (2 on its first move), captures diagonally forward, and becomes a Queen on the far rank. Secretly a 2009 Toyota Corolla! On any turn it can throw a smoke bomb and Reveal 💨, turning into a 2009 Toyota Corolla (rook moves and charge, ready to use). Revealing is free: you then take another turn with any piece.",
+      "description": "Looks and moves exactly like a Pawn: 1 forward (2 on its first move), captures diagonally forward, and becomes a Queen on the far rank. Secretly a 2009 Toyota Corolla! On your turn, select it and click it again to throw a smoke bomb and Reveal 💨, turning into a 2009 Toyota Corolla (rook moves and charge, ready to use). Revealing is free: you then take another turn with any piece.",
       "customArt": null
     }
   ],
@@ -91,11 +91,11 @@
       "pawn",
       "ninja_wizard",
       "pawn",
+      "ninja_kamikaze_knight",
+      "ninja_kamikaze_knight",
       "pawn",
       "ninja_2009_toyota_corolla",
-      "pawn",
-      "pawn",
-      "ninja_kamikaze_knight"
+      "pawn"
     ],
     [
       null,

@@ -159,15 +159,18 @@
     return {
       name: 'Pawn',
       icon: '♟',
-      description: `Looks and moves exactly like a Pawn: 1 forward (2 on its first move), captures diagonally forward, and becomes a Queen on the far rank. Secretly a ${trueName}! On any turn it can throw a smoke bomb and Reveal 💨, turning into a ${trueName} (${powers}). Revealing is free: you then take another turn with any piece.`,
+      description: `Looks and moves exactly like a Pawn: 1 forward (2 on its first move), captures diagonally forward, and becomes a Queen on the far rank. Secretly a ${trueName}! On your turn, select it and click it again to throw a smoke bomb and Reveal 💨, turning into a ${trueName} (${powers}). Revealing is free: you then take another turn with any piece.`,
+      // Reveal by clicking the selected Ninja again. It's only offered on Black's own turn,
+      // so the opponent's move preview (made on their turn) shows a plain Pawn.
       moves(p, g) {
         const steps = pawnMoves(p, g);
-        return [...steps, ...hideOnSquares(p, steps, { label: 'Reveal 💨', action(p, g) {
+        if (g.turn !== p.side) return steps;
+        return [...steps, { x: p.x, y: p.y, label: 'Reveal 💨', action(p, g) {
           g.effect('burst', { x: p.x, y: p.y, radius: 0, icon: '💨', color: 'gray' });
           g.transform(p, trueType);
           g.log(`💨 Smoke bomb! That Pawn was a ${trueName}!`);
           g.extraTurn();
-        } })];
+        } }];
       },
       onMove: promote,
     };
@@ -227,7 +230,7 @@
     // Read from your own seat: first row is your back rank, listed left to right.
     setup: [
       ['rook', 'knight', 'bishop', 'king', 'queen', 'bishop', 'knight', 'rook'],
-      ['pawn', 'ninja_wizard', 'pawn', 'pawn', 'ninja_2009_toyota_corolla', 'pawn', 'pawn', 'ninja_kamikaze_knight'],
+      ['pawn', 'ninja_wizard', 'pawn', 'ninja_kamikaze_knight', 'ninja_kamikaze_knight', 'pawn', 'ninja_2009_toyota_corolla', 'pawn'],
     ],
   });
 })();
