@@ -94,7 +94,7 @@
               for (let y = p.y - 5; y <= p.y + 5; y++) {
                 if (!g.isEmpty(x, y)) continue;
                 out.push({ x, y, label: `Throw ${name} from ${g.square(q.x, q.y)}`, action(p, g) {
-                  g.effect('projectile', { from: [q.x, q.y], to: [x, y], icon: g.def(q).icon });
+                  g.effect('move', { from: [q.x, q.y], to: [x, y] });
                   g.moveTo(q, x, y);
                   g.log(`💪 The Tank throws ${g.nameOf(q)} to ${g.square(x, y)}.`);
                   if (g.kind(q) === 'pawn' && g.rank(q) === 8) {
