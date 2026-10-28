@@ -62,11 +62,18 @@
   function charge(p, g, dx, dy, k) {
     const road = [];
     for (let i = 1; i <= k; i++) road.push(g.rel(p, dx * i, dy * i));
-    g.effect('projectile', { from: [p.x, p.y], to: road[road.length - 1], icon: '🚗' });
+    // The car itself drives down the road, crashing into each victim as it reaches it.
+    let shownAt = [p.x, p.y];
+    const driveTo = (sq) => {
+      if (sq[0] === shownAt[0] && sq[1] === shownAt[1]) return;
+      g.effect('move', { from: shownAt, to: sq });
+      shownAt = sq;
+    };
     let stop = null;
     for (const [x, y] of road) {
       const victim = g.at(x, y);
       if (victim) {
+        driveTo([x, y]);
         g.effect('burst', { x, y, radius: 0, icon: '💥' });
         g.capture(victim, p);
         if (!g.isOnBoard(p)) return;
@@ -74,7 +81,10 @@
       if (g.isEmpty(x, y)) stop = [x, y];
     }
     startCooldown(p, 'chargeCd');
-    if (stop) g.moveTo(p, ...stop);
+    if (stop) {
+      driveTo(stop);
+      g.moveTo(p, ...stop);
+    }
   }
 
   // ---- Wizard
