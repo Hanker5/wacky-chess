@@ -24,6 +24,18 @@
     .filter(([nx, ny]) => g.inBounds(nx, ny));
   const distance = (a, b) => Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
 
+  // Effects queued in onTurnStart play over the board as it was before the last move, and
+  // an ordinary move has no animation of its own. Call this before such effects: it slides
+  // the piece that just moved first, so it isn't still shown on its old square.
+  function showLastMove(g) {
+    const last = g.state.lastMove;
+    if (!last) return;
+    const { from, to } = last;
+    if (!g.at(to.x, to.y) || g.at(from.x, from.y)) return; // nothing slid from `from` to `to`
+    if (g.effects.some((fx) => fx.kind === 'move' && fx.to[0] === to.x && fx.to[1] === to.y)) return;
+    g.effect('move', { from: [from.x, from.y], to: [to.x, to.y] });
+  }
+
   // ---- Wizard-King
   const FIREBALL_RANGE = 3;
   const FIREBALL_COOLDOWN = 3;
@@ -167,6 +179,7 @@
       } else if (h.left <= 0) {
         delete q.data.hypnosis;
         g.convert(q, q.type.split(':')[0]);
+        showLastMove(g);
         g.effect('burst', { x: q.x, y: q.y, radius: 0, icon: '💫', color: 'violet' });
         g.log(`💫 ${g.nameOf(q)} wakes up from its hypnosis!`);
       }
@@ -204,6 +217,7 @@
         }
         const bloom = g.pick(BLOOMS);
         g.transform(p, `white:${bloom}`);
+        showLastMove(g);
         g.effect('burst', { x: p.x, y: p.y, radius: 0, icon: '🌸', color: 'hotpink' });
         g.log(`🌸 A Plant on ${g.square(p.x, p.y)} grew into a ${g.def(p).name}!`);
       },
@@ -270,6 +284,7 @@
       const [x, y] = g.pick(steps.filter(([sx, sy]) => nearest(sx, sy) === best));
       target = { x, y };
     }
+    showLastMove(g);
     g.effect('move', { from: [p.x, p.y], to: [target.x, target.y] });
     if (bites.length) {
       g.effect('burst', { x: target.x, y: target.y, radius: 0, icon: '🧠', color: 'darkolivegreen' });
