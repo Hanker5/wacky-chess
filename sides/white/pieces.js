@@ -184,6 +184,31 @@
         g.log(`💫 ${g.nameOf(q)} wakes up from its hypnosis!`);
       }
     }
+    markHypnotized(g);
+  }
+  // Badges come from the piece's own (enemy) definition, so the countdown is drawn as a
+  // tile under each hypnotized piece instead, redrawn every turn so it follows the piece.
+  // It shows how many of the hypnotizer's turns are left, counting the current one.
+  function markHypnotized(g) {
+    for (let x = 0; x < 8; x++) for (let y = 0; y < 8; y++) {
+      const t = g.peekTile(x, y);
+      if (!t || !t.hypnosisMark) continue;
+      delete t.hypnosisMark; delete t.icon; delete t.color; delete t.label;
+      if (!Object.keys(t).length) g.clearTile(x, y);
+    }
+    for (const q of g.pieces((q) => q.data && q.data.hypnosis && q.side === q.data.hypnosis.side)) {
+      const h = q.data.hypnosis;
+      const left = g.turn === h.side ? h.left + 1 : h.left;
+      const t = g.tile(q.x, q.y);
+      if (t.icon || t.color) continue; // don't cover someone else's tile
+      // The piece covers most of the square, so the corner only fits one keycap digit.
+      Object.assign(t, {
+        hypnosisMark: true,
+        icon: `${left}️⃣`,
+        color: '#a77bd6',
+        label: `Hypnotized: fights for ${g.sideName(h.side)} for ${left} more of its turn${left === 1 ? '' : 's'}`,
+      });
+    }
   }
 
   // ---- Gardener and Plant
@@ -322,7 +347,7 @@
     bishop: {
       name: 'Hypnotist',
       icon: '🔮',
-      description: `Each turn, pick one: STEP 1 square in any direction, capturing an enemy there. Or HYPNOTIZE 🌀 an enemy on one of the 8 squares next to it (not a King or other royal): it joins White, keeping its type and abilities, and you can use it on your next ${HYPNOSIS_TURNS} turns. Right after your ${HYPNOSIS_TURNS}rd turn it turns back to Black. The spell keeps going even if the Hypnotist is captured. A captured White piece that Black has taken over can be hypnotized back, and then it rejoins White for good. After hypnotizing, it can't hypnotize again on your next ${HYPNOSIS_COOLDOWN} turns (the badge counts down).`,
+      description: `Each turn, pick one: STEP 1 square in any direction, capturing an enemy there. Or HYPNOTIZE 🌀 an enemy on one of the 8 squares next to it (not a King or other royal): it joins White, keeping its type and abilities, and you can use it on your next ${HYPNOSIS_TURNS} turns. Right after your ${HYPNOSIS_TURNS}rd turn it turns back to Black. While hypnotized, its square is tinted violet, with a counter in the corner showing how many of your turns are left. The spell keeps going even if the Hypnotist is captured. A captured White piece that Black has taken over can be hypnotized back, and then it rejoins White for good. After hypnotizing, it can't hypnotize again on your next ${HYPNOSIS_COOLDOWN} turns (the badge counts down).`,
       moves: hypnotistMoves,
       badge: (p, g) => turnsLeft(p, g, 'hypnoCd') || '',
       onTurnStart: (p, g) => tickCooldowns(p, g, ['hypnoCd']),

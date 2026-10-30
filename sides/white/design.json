@@ -34,7 +34,7 @@
       "name": "Hypnotist",
       "icon": "🔮",
       "royal": false,
-      "description": "Each turn, pick one: STEP 1 square in any direction, capturing an enemy there. Or HYPNOTIZE 🌀 an enemy on one of the 8 squares next to it (not a King or other royal): it joins White, keeping its type and abilities, and you can use it on your next 3 turns. Right after your 3rd turn it turns back to Black. The spell keeps going even if the Hypnotist is captured. A captured White piece that Black has taken over can be hypnotized back, and then it rejoins White for good. After hypnotizing, it can't hypnotize again on your next 3 turns (the badge counts down).",
+      "description": "Each turn, pick one: STEP 1 square in any direction, capturing an enemy there. Or HYPNOTIZE 🌀 an enemy on one of the 8 squares next to it (not a King or other royal): it joins White, keeping its type and abilities, and you can use it on your next 3 turns. Right after your 3rd turn it turns back to Black. While hypnotized, its square is tinted violet, with a counter in the corner showing how many of your turns are left. The spell keeps going even if the Hypnotist is captured. A captured White piece that Black has taken over can be hypnotized back, and then it rejoins White for good. After hypnotizing, it can't hypnotize again on your next 3 turns (the badge counts down).",
       "customArt": null
     },
     {
