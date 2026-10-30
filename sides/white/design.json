@@ -1,0 +1,129 @@
+{
+  "version": 1,
+  "side": "white",
+  "name": "White",
+  "pieces": [
+    {
+      "key": "king",
+      "name": "Wizard-King",
+      "icon": "♚",
+      "royal": true,
+      "description": "Each turn, pick one: STEP 1 square in any direction, capturing an enemy there. Or FIREBALL 🔥: blast the first piece within 3 squares in any of the 8 directions, friend or foe (the enemy King too, which wins the game), destroying it while the Wizard-King stays put. After a fireball, it can't fireball again on your next 3 turns (the badge counts down). Lose all your royal pieces and you lose.",
+      "customArt": null
+    },
+    {
+      "key": "queen",
+      "name": "Heavy Artillery",
+      "icon": "sides/white/assets/heavy-artillery.svg",
+      "royal": false,
+      "description": "Each turn, pick one: STEP 1 square in any direction, capturing an enemy there. Or FIRE 💣: lob a shell over anything in the way onto any square 2 to 5 squares away in one of the 8 directions (empty or not). The shell destroys every piece on that square and the 8 squares around it, friend or foe, Kings included: blowing up the enemy King wins, blowing up your own loses. Reloading takes 5 turns, counting both players' turns, so it can fire again on your 3rd turn after firing (the badge counts down every turn).",
+      "customArt": {
+        "description": "Draw a large modern military style artillery cannon"
+      }
+    },
+    {
+      "key": "rook",
+      "name": "2009 Toyota Corolla",
+      "icon": "🚗",
+      "royal": false,
+      "description": "Moves like a Rook. Or CHARGE 🚗💨: drive any distance in a straight line (up, down, left or right) right through other pieces, running over every piece it passes and the one it lands on: friend or foe, the enemy King included. It can't charge through your own King. After a charge it can only make normal Rook moves for your next 3 turns (the badge counts down). If a piece survives being hit, the car drives over it; if the piece on the final square survives, the car stops on the last empty square before it.",
+      "customArt": null
+    },
+    {
+      "key": "bishop",
+      "name": "Hypnotist",
+      "icon": "🔮",
+      "royal": false,
+      "description": "Each turn, pick one: STEP 1 square in any direction, capturing an enemy there. Or HYPNOTIZE 🌀 an enemy on one of the 8 squares next to it (not a King or other royal): it joins White, keeping its type and abilities, and you can use it on your next 3 turns. Right after your 3rd turn it turns back to Black. The spell keeps going even if the Hypnotist is captured. A captured White piece that Black has taken over can be hypnotized back, and then it rejoins White for good. After hypnotizing, it can't hypnotize again on your next 3 turns (the badge counts down).",
+      "customArt": null
+    },
+    {
+      "key": "knight",
+      "name": "Gardener",
+      "icon": "🪏",
+      "royal": false,
+      "description": "Each turn, pick one: JUMP in an L shape like a Knight, over anything in the way, capturing an enemy where it lands. Or PLANT 🌱 a Plant on any empty square next to it (8 directions). After planting, it can't plant again on your next turn (the badge shows when it's waiting), but it can still jump.",
+      "customArt": null
+    },
+    {
+      "key": "pawn",
+      "name": "Checker",
+      "icon": "⚪️",
+      "royal": false,
+      "description": "Plays like a checkers piece. Moves 1 square diagonally forward onto an empty square. Or JUMP: hop diagonally forward over an adjacent enemy (the enemy King too, which wins) onto the empty square beyond, capturing it. After a jump it may keep jumping in the same turn (you pick where the chain stops). Reaching the far rank crowns it as a Checker King, and that ends the chain.",
+      "customArt": null
+    },
+    {
+      "key": "checker_king",
+      "name": "Checker King",
+      "icon": "👑",
+      "royal": false,
+      "description": "A crowned Checker (not royal: losing it doesn't lose the game). Moves 1 square diagonally in any direction onto an empty square. Or JUMP diagonally in any direction over an adjacent enemy (the enemy King too, which wins) onto the empty square beyond, capturing it, and may keep chaining jumps in the same turn.",
+      "customArt": null
+    },
+    {
+      "key": "plant",
+      "name": "Plant",
+      "icon": "🌱",
+      "royal": false,
+      "description": "Can't move or do anything, but it can be captured. Grows at the start of each of your turns: 🌱 → ☘️ → 🍀, and on your 3rd turn after being planted it becomes a random White piece (Heavy Artillery, 2009 Toyota Corolla, Hypnotist, Gardener or Zombie), which can act that same turn. (This is stage 1 of 3.)",
+      "customArt": null
+    },
+    {
+      "key": "plant_2",
+      "name": "Plant",
+      "icon": "☘️",
+      "royal": false,
+      "description": "Can't move or do anything, but it can be captured. Grows at the start of each of your turns: 🌱 → ☘️ → 🍀, and on your 3rd turn after being planted it becomes a random White piece (Heavy Artillery, 2009 Toyota Corolla, Hypnotist, Gardener or Zombie), which can act that same turn. (This is stage 2 of 3.)",
+      "customArt": null
+    },
+    {
+      "key": "plant_3",
+      "name": "Plant",
+      "icon": "🍀",
+      "royal": false,
+      "description": "Can't move or do anything, but it can be captured. Grows at the start of each of your turns: 🌱 → ☘️ → 🍀, and on your 3rd turn after being planted it becomes a random White piece (Heavy Artillery, 2009 Toyota Corolla, Hypnotist, Gardener or Zombie), which can act that same turn. (This is stage 3 of 3.)",
+      "customArt": null
+    },
+    {
+      "key": "zombie",
+      "name": "Zombie",
+      "icon": "🧟",
+      "royal": false,
+      "description": "Moves on its own and can't be moved by you. At the start of each of your turns (before you move), it shambles 1 square toward the nearest enemy. If an enemy is right next to it, it eats it instead, the enemy King included (which wins the game). Otherwise it steps to whichever empty neighboring square gets it closest to an enemy, and stays put if no step gets closer. Ties are picked at random.",
+      "customArt": null
+    }
+  ],
+  "setup": [
+    [
+      "rook",
+      "knight",
+      "bishop",
+      "queen",
+      "king",
+      "bishop",
+      "knight",
+      "rook"
+    ],
+    [
+      "zombie",
+      "pawn",
+      "pawn",
+      "pawn",
+      "pawn",
+      "pawn",
+      "pawn",
+      "zombie"
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ]
+  ]
+}
