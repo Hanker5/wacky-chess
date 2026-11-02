@@ -6,7 +6,7 @@
     {
       "key": "king",
       "name": "King",
-      "icon": "â™š",
+      "icon": "♚",
       "royal": true,
       "description": "Moves one square in any direction. Lose all your royal pieces and you lose.",
       "customArt": null
@@ -14,7 +14,7 @@
     {
       "key": "queen",
       "name": "Queen",
-      "icon": "â™›",
+      "icon": "♛",
       "royal": true,
       "description": "Slides any distance in any direction. Royal: lose all your royal pieces and you lose.",
       "customArt": null
@@ -22,7 +22,7 @@
     {
       "key": "rook",
       "name": "Archer",
-      "icon": "ðŸ¹",
+      "icon": "🏹",
       "royal": false,
       "description": "Steps one square in any direction (capturing as it goes). Or shoots any enemy piece on the board, no line of sight needed, every turn with no cooldown. The arrow has a 75% chance to drift one square in a random one of the 8 directions (possibly off the board). It destroys whatever piece it ends on, friend or foe. Otherwise it lands on the target.",
       "customArt": null
@@ -30,7 +30,7 @@
     {
       "key": "bishop",
       "name": "Kamikaze",
-      "icon": "ðŸ›©ï¸",
+      "icon": "🛩️",
       "royal": false,
       "description": "Moves like a queen in all 8 directions but flies over any pieces in the way. Landing on an enemy makes it blow up, destroying every piece in the 3x3 area around that square, friends and itself included. It can also detonate in place instead of moving. One use only. Indestructible Castles survive and Doors take one hit.",
       "customArt": null
@@ -38,7 +38,7 @@
     {
       "key": "knight",
       "name": "Calvary",
-      "icon": "â™ž",
+      "icon": "♞",
       "royal": false,
       "description": "Travels up to 5 squares along a path of up, down, left or right steps (turning as often as it likes, never crossing a square twice). Every square on the path must be empty. It captures an enemy on the last square of the path, by moving onto it.",
       "customArt": null
@@ -46,7 +46,7 @@
     {
       "key": "pawn",
       "name": "Castle",
-      "icon": "ðŸ°",
+      "icon": "🏰",
       "royal": false,
       "description": "Cannot move and cannot be destroyed by anything. A wall.",
       "customArt": null
@@ -54,7 +54,7 @@
     {
       "key": "door",
       "name": "Door",
-      "icon": "ðŸšª",
+      "icon": "🚪",
       "royal": false,
       "description": "Cannot move. Takes two hits before it is destroyed. The first time an enemy hits it up close (from an adjacent square), that attacker is shoved to the square in front of the Door (toward the enemy). If that square is blocked or off the board, the attacker stays where it was. Arrows and explosions also count as a hit but push nobody. The second hit destroys it, and a melee attacker takes its square.",
       "customArt": null
@@ -62,7 +62,7 @@
     {
       "key": "barbarians",
       "name": "Barbarians",
-      "icon": "âš”ï¸",
+      "icon": "⚔️",
       "royal": false,
       "description": "Steps one square up, down, left or right (capturing an enemy it steps onto). It can also kill any enemy in the 8 squares around it without moving, every turn, with no cooldown.",
       "customArt": null

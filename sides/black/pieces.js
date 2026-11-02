@@ -6,7 +6,7 @@
 (() => {
   // Destroys every piece (friend or foe, itself included) in the 3x3 around (cx, cy).
   function blast(g, kamikaze, cx, cy) {
-    g.effect('burst', { x: cx, y: cy, radius: 1, icon: 'ðŸ’¥', color: 'orange' });
+    g.effect('burst', { x: cx, y: cy, radius: 1, icon: '💥', color: 'orange' });
     const victims = [];
     for (let dx = -1; dx <= 1; dx++) {
       for (let dy = -1; dy <= 1; dy++) {
@@ -50,7 +50,7 @@
       && Math.max(Math.abs(t.x - p.x), Math.abs(t.y - p.y)) <= reach).map((t) => ({
       x: t.x, y: t.y, label,
       action(p, g) {
-        g.effect('projectile', { from: [p.x, p.y], to: [t.x, t.y], icon: 'ðŸ’¢' });
+        g.effect('projectile', { from: [p.x, p.y], to: [t.x, t.y], icon: '💢' });
         g.capture(t, p);
       },
     }));
@@ -62,14 +62,14 @@
     pieces: {
       king: {
         name: 'King',
-        icon: 'â™š',
+        icon: '♚',
         royal: true,
         description: 'Moves one square in any direction. Lose all your royal pieces and you lose.',
         moves: (p, g) => g.leap(p, g.DIRS.ALL),
       },
       queen: {
         name: 'Queen',
-        icon: 'â™›',
+        icon: '♛',
         royal: true,
         description: 'Slides any distance in any direction. Royal: lose all your royal pieces and you lose.',
         moves: (p, g) => g.slide(p, g.DIRS.ALL),
@@ -77,7 +77,7 @@
 
       rook: {
         name: 'Archer',
-        icon: 'ðŸ¹',
+        icon: '🏹',
         description: 'Steps one square in any direction (capturing as it goes). Or shoots any enemy piece on the board, '
           + 'no line of sight needed, every turn with no cooldown. The arrow has a 75% chance to drift one square '
           + 'in a random one of the 8 directions (possibly off the board). It destroys whatever piece it ends on, '
@@ -85,7 +85,7 @@
         moves: (p, g) => [
           ...g.leap(p, g.DIRS.ALL),
           ...g.pieces((t) => g.isEnemy(p, t)).map((t) => ({
-            x: t.x, y: t.y, label: 'Shoot ðŸ¹',
+            x: t.x, y: t.y, label: 'Shoot 🏹',
             action(p, g) {
               let tx = t.x, ty = t.y;
               if (g.random() < 0.75) {
@@ -93,12 +93,12 @@
                 tx += dx; ty += dy;
               }
               if (g.inBounds(tx, ty)) {
-                g.effect('projectile', { from: [p.x, p.y], to: [tx, ty], icon: 'ðŸ¹' });
+                g.effect('projectile', { from: [p.x, p.y], to: [tx, ty], icon: '🏹' });
                 const hit = g.at(tx, ty);
                 if (hit) g.capture(hit, null);
                 else g.log(`The arrow lands harmlessly on ${g.square(tx, ty)}`);
               } else {
-                g.effect('projectile', { from: [p.x, p.y], to: [t.x, t.y], icon: 'ðŸ¹' });
+                g.effect('projectile', { from: [p.x, p.y], to: [t.x, t.y], icon: '🏹' });
                 g.log('The arrow flies off the board!');
               }
             },
@@ -108,7 +108,7 @@
 
       bishop: {
         name: 'Kamikaze',
-        icon: 'ðŸ›©ï¸',
+        icon: '🛩️',
         description: 'Moves like a queen in all 8 directions but flies over any pieces in the way. Landing on an enemy '
           + 'makes it blow up, destroying every piece in the 3x3 area around that square, friends and itself included. '
           + 'It can also detonate in place instead of moving. One use only. Indestructible Castles survive and '
@@ -121,7 +121,7 @@
               if (!occupant) out.push({ x, y });
               else if (g.isEnemy(p, occupant)) {
                 out.push({
-                  x, y, label: 'Strike ðŸ’¥',
+                  x, y, label: 'Strike 💥',
                   action(p, g) {
                     g.effect('move', { from: [p.x, p.y], to: [x, y] });
                     blast(g, p, x, y);
@@ -131,7 +131,7 @@
             }
           }
           out.push({
-            x: p.x, y: p.y, label: 'Detonate ðŸ’¥',
+            x: p.x, y: p.y, label: 'Detonate 💥',
             action: (p, g) => blast(g, p, p.x, p.y),
           });
           return out;
@@ -140,7 +140,7 @@
 
       knight: {
         name: 'Calvary',
-        icon: 'â™ž',
+        icon: '♞',
         description: 'Travels up to 5 squares along a path of up, down, left or right steps (turning as often as it likes, '
           + 'never crossing a square twice). Every square on the path must be empty. It captures an enemy on the '
           + 'last square of the path, by moving onto it.',
@@ -149,7 +149,7 @@
 
       pawn: {
         name: 'Castle',
-        icon: 'ðŸ°',
+        icon: '🏰',
         description: 'Cannot move and cannot be destroyed by anything. A wall.',
         moves: () => [],
         onCaptured: () => false,
@@ -157,7 +157,7 @@
 
       door: {
         name: 'Door',
-        icon: 'ðŸšª',
+        icon: '🚪',
         description: 'Cannot move. Takes two hits before it is destroyed. The first time an enemy hits it up close '
           + '(from an adjacent square), that attacker is shoved to the square in front of the Door (toward the enemy). '
           + 'If that square is blocked or off the board, the attacker stays where it was. Arrows and explosions also '
@@ -167,7 +167,7 @@
         onCaptured(p, g, attacker) {
           p.data.hits = (p.data.hits || 0) + 1;
           if (p.data.hits >= 2) return true;
-          g.log(`ðŸšª ${g.nameOf(p)} holds (1 hit left)`);
+          g.log(`🚪 ${g.nameOf(p)} holds (1 hit left)`);
           const melee = attacker && Math.max(Math.abs(attacker.x - p.x), Math.abs(attacker.y - p.y)) === 1;
           if (melee) {
             const [fx, fy] = g.rel(p, 0, 1);
@@ -179,12 +179,12 @@
 
       barbarians: {
         name: 'Barbarians',
-        icon: 'âš”ï¸',
+        icon: '⚔️',
         description: 'Steps one square up, down, left or right (capturing an enemy it steps onto). It can also kill any '
           + 'enemy in the 8 squares around it without moving, every turn, with no cooldown.',
         moves: (p, g) => [
           ...g.leap(p, g.DIRS.ORTHO),
-          ...strikes(p, g, 1, 'Strike âš”ï¸'),
+          ...strikes(p, g, 1, 'Strike ⚔️'),
         ],
       },
 
@@ -196,7 +196,7 @@
         customArt: { description: 'A spear with a wooden handle and an iron head.' },
         moves: (p, g) => [
           ...g.leap(p, g.DIRS.ALL),
-          ...strikes(p, g, 2, 'Strike ðŸ—¡ï¸'),
+          ...strikes(p, g, 2, 'Strike 🗡️'),
         ],
       },
     },
