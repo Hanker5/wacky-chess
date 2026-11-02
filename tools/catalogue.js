@@ -97,6 +97,9 @@ function findEntry(catalogue, id) {
 function makeCompanion(catalogue, parentId, childId) {
   const parent = findEntry(catalogue, parentId);
   const child = findEntry(catalogue, childId);
+  if (parent === child) throw new Error(`${childId} can't be a companion of itself`);
+  // A companion has no companions field, so folding this one in would lose its helpers.
+  if (child.companions.length) throw new Error(`${childId} has companions of its own; fold those into ${parentId} first`);
   if (parent.match !== child.match || parent.side !== child.side) {
     throw new Error(`${childId} can only be a companion of a piece from the same match and side`);
   }
@@ -211,9 +214,20 @@ function snapshotMatch(match, git, root) {
   return { catalogue: merged, report };
 }
 
+// Stale remote branches could hide a player branch that's still secret, so a failed
+// fetch stops here rather than trusting what this clone last saw.
+function addMatch(match, git, root) {
+  if (!git(['fetch', '--prune']).ok) {
+    throw new Error("git fetch failed, so I can't check that the player branches are merged. Get online and try again.");
+  }
+  const refusal = checkSecrecy(match, git);
+  if (refusal) throw new Error(refusal);
+  return snapshotMatch(match, git, root).report;
+}
+
 module.exports = {
   loadSides, rewriteIcon, isStock, draftEntries, findDuplicates, mergeEntries, makeCompanion, dropEntry,
-  checkSecrecy, snapshotMatch,
+  checkSecrecy, snapshotMatch, addMatch,
 };
 
 if (require.main === module) {
@@ -224,14 +238,7 @@ if (require.main === module) {
   };
   try {
     if (cmd === 'add' && args.length === 1) {
-      if (!realGit(['fetch', '--prune']).ok) console.warn('⚠ git fetch failed; using the branches you already have.');
-      const refusal = checkSecrecy(args[0], realGit);
-      if (refusal) {
-        console.error(`✖ ${refusal}`);
-        process.exit(1);
-      }
-      const { report } = snapshotMatch(args[0], realGit, ROOT);
-      console.log(report.join('\n'));
+      console.log(addMatch(args[0], realGit, ROOT).join('\n'));
       console.log('\nNext: fold helpers in with `companion`, remove duplicates and near-stock pieces with `drop`, then run node --test.');
     } else if (cmd === 'companion' && args.length === 2) {
       writeCatalogue(ROOT, makeCompanion(readCatalogue(ROOT), args[0], args[1]));

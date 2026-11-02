@@ -213,3 +213,12 @@ test('fromLabel names the match and side', () => {
   assert.equal(D.fromLabel('2026-10-30/white/knight#plant_2'), 'from 10-30 · White');
   assert.equal(D.fromLabel(undefined), '');
 });
+
+test('companionNote names the helpers only when they share a name', () => {
+  const c = (name) => ({ key: name, name, icon: '', royal: false, description: '', customArt: null });
+  assert.equal(D.companionNote([]), '');
+  assert.equal(D.companionNote([c('Plant'), c('Plant'), c('Plant')]), '+3 Plant');
+  assert.equal(D.companionNote([c('Checker King')]), '+1 Checker King');
+  assert.equal(D.companionNote([c('Undead Pawn'), c('Undead Knight')]), '+2 helpers');
+  assert.equal(D.companionNote(undefined), '');
+});

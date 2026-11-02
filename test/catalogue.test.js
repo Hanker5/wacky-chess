@@ -145,3 +145,16 @@ test('catalogue/catalogue.json is complete and matches its snapshots', { skip: !
     }
   }
 });
+
+test('addMatch stops when git fetch fails, instead of trusting stale branches', () => {
+  const git = (args) => (args[0] === 'fetch' ? { ok: false, out: Buffer.from('') } : fakeGit(['origin/match/2026-11-05'])(args));
+  assert.throws(() => C.addMatch('2026-11-05', git, '/nonexistent'), /fetch/);
+});
+
+test('makeCompanion refuses to fold an entry into itself or one that has companions of its own', () => {
+  const cat = { version: 1, entries: [e('2026-10-30/white/king'), e('2026-10-30/white/knight', {
+    companions: [{ key: 'plant', name: 'Plant', icon: '🌱', royal: false, description: 'Grows.', customArt: null }],
+  })] };
+  assert.throws(() => C.makeCompanion(cat, '2026-10-30/white/king', '2026-10-30/white/king'), /itself/);
+  assert.throws(() => C.makeCompanion(cat, '2026-10-30/white/king', '2026-10-30/white/knight'), /companions of its own/);
+});

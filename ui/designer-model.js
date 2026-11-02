@@ -130,6 +130,14 @@
     });
   }
 
+  // '+3 Plant' when the helpers share a name, else '+5 helpers'.
+  function companionNote(companions) {
+    const list = Array.isArray(companions) ? companions : [];
+    if (!list.length) return '';
+    const names = new Set(list.map((c) => c.name));
+    return `+${list.length} ${names.size === 1 ? list[0].name : 'helpers'}`;
+  }
+
   function catalogueMatches(entries) {
     return [...new Set(entries.map((e) => e.match))].sort().reverse();
   }
@@ -211,7 +219,7 @@
     KEY_RE, ROWS, SIZE, CHESS_GLYPHS,
     slugKey, emptyDesign, normalizeDesign, designFromSide,
     addPiece, removePiece, rekeyPiece, setCell, isPlaced, warnings, searchEmoji,
-    addFromCatalogue, filterCatalogue, catalogueMatches, fromLabel,
+    addFromCatalogue, filterCatalogue, catalogueMatches, companionNote, fromLabel,
   };
   root.WackyDesigner = api;
   if (typeof module === 'object' && module.exports) module.exports = api;

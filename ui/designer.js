@@ -176,8 +176,8 @@
     // Clicking the text shows the whole description; it's clamped to two lines otherwise.
     const text = el('button', 'catalogue-text');
     text.type = 'button';
-    const companions = entry.companions || [];
-    const meta = `${shortMatch(entry.match)} · ${sideLabel(entry.side)}${companions.length ? ` · +${companions.length} ${companions[0].name}` : ''}`;
+    const note = D.companionNote(entry.companions);
+    const meta = `${shortMatch(entry.match)} · ${sideLabel(entry.side)}${note ? ` · ${note}` : ''}`;
     text.append(el('span', 'catalogue-name', entry.name), el('span', 'catalogue-meta', meta), el('span', 'catalogue-desc', entry.description));
     text.addEventListener('click', () => row.classList.toggle('open'));
 

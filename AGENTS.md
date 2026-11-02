@@ -73,6 +73,8 @@ and push. The secrecy rule is over by then, since the sides are merged and visib
    `index.html`, `designer.html`, `tools/`, `docs/`, or the other color's folder. The
    two players merge their branches later, and edits outside your folder cause
    conflicts. Changing the rules engine in your own favor would also be cheating.
+   (Adding a finished match to the catalogue is the one exception: it happens on a
+   `template/` branch off `main`, see "When a match ends" below.)
 2. **Don't peek at the other side.** Don't check out, diff, or read the other color's
    player branch, and don't read their `sides/` file if it differs from the plain-chess
    template. The pieces are supposed to be a surprise. Reading `catalogue/` is always
@@ -107,7 +109,9 @@ side's name, and for each piece a `key`, `name`, `icon` (an emoji, or an image p
   `sides/<your color>/assets/` that matches the description, and use its path as the
   `icon` in both `pieces.js` and `design.json`. Keep the `customArt` entry as a record.
   A piece whose `icon` is already an asset path has its art. Redraw it only if the
-  player changes the `customArt` description or asks.
+  player changes the `customArt` description or asks. A `catalogue/...` icon also
+  counts as having its art: copy it into your `assets/` (see "Pieces from the
+  catalogue"), don't redraw it.
 - **Keep `design.json` in sync with what you built.** After the first build, and after
   every later change (from chat or from a re-save in the designer), rewrite
   `design.json` so its names, icons, descriptions (including the details your
@@ -125,7 +129,8 @@ side's name, and for each piece a `key`, `name`, `icon` (an emoji, or an image p
      of `from` (for a helper piece, the key after `#`). Copy its code, and any helpers it
      uses, into your side file inside the wrapper.
   2. Compare the card's description with the catalogue entry's description in
-     `catalogue/catalogue.json`. If they match, the player kept the piece as it was:
+     `catalogue/catalogue.json` (for a helper piece, look in its parent entry's
+     `companions` list). If they match, the player kept the piece as it was:
      don't ask rule questions about it. Otherwise, ask clarifying questions about the
      differences only.
   3. Fix whatever changes between seats or matches: type names in `spawn` and
