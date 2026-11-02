@@ -90,3 +90,58 @@ test('makeCompanion and dropEntry reshape the catalogue and refuse bad ids', () 
   assert.equal(C.dropEntry(cat, '2026-10-30/black/door').entries.length, 2);
   assert.throws(() => C.dropEntry(cat, 'nope'), /nope/);
 });
+
+// A fake `git` for checkSecrecy: which branches exist, and which player branches are merged.
+const fakeGit = (branches, merged = []) => (args) => {
+  if (args[0] === 'rev-parse') return { ok: branches.includes(args[args.length - 1]), out: Buffer.from('') };
+  if (args[0] === 'merge-base') return { ok: merged.includes(args[2]), out: Buffer.from('') };
+  throw new Error(`unexpected git ${args.join(' ')}`);
+};
+
+test('checkSecrecy refuses a match whose player branches are not merged', () => {
+  const m = 'origin/match/2026-11-05';
+  assert.equal(C.checkSecrecy('2026-11-05', fakeGit([m])), null);
+  assert.equal(C.checkSecrecy('2026-11-05', fakeGit([m, `${m}-white`], [`${m}-white`])), null);
+  assert.match(C.checkSecrecy('2026-11-05', fakeGit([m, `${m}-black`])), /match\/2026-11-05-black/);
+  assert.match(C.checkSecrecy('2026-11-05', fakeGit([])), /origin\/match\/2026-11-05/);
+});
+
+// The real catalogue, if there is one: well-formed, every file present, and every key
+// still found in its snapshot. Snapshots are history, so one that no longer loads on
+// today's engine is reported as a todo rather than failing the run.
+const CATALOGUE = path.join(ROOT, 'catalogue', 'catalogue.json');
+test('catalogue/catalogue.json is complete and matches its snapshots', { skip: !fs.existsSync(CATALOGUE) && 'no catalogue yet' }, (t) => {
+  const cat = JSON.parse(fs.readFileSync(CATALOGUE, 'utf8'));
+  assert.equal(cat.version, 1);
+  const fields = ['id', 'match', 'side', 'sideName', 'key', 'name', 'icon', 'royal', 'description', 'customArt', 'companions'];
+  const ids = new Set();
+  const bySnapshot = new Map();
+  for (const entry of cat.entries) {
+    assert.deepEqual(Object.keys(entry).sort(), fields.slice().sort(), entry.id);
+    assert.equal(entry.id, `${entry.match}/${entry.side}/${entry.key}`);
+    assert.ok(!ids.has(entry.id), `duplicate id ${entry.id}`);
+    ids.add(entry.id);
+    assert.ok(entry.description.trim(), `${entry.id} has no description`);
+    for (const piece of [entry, ...entry.companions]) {
+      if (piece.icon.startsWith('catalogue/')) assert.ok(fs.existsSync(path.join(ROOT, piece.icon)), `missing ${piece.icon}`);
+    }
+    const snap = `${entry.match}/${entry.side}`;
+    assert.ok(fs.existsSync(path.join(ROOT, 'catalogue', snap, 'pieces.js')), `missing snapshot ${snap}`);
+    if (!bySnapshot.has(snap)) bySnapshot.set(snap, []);
+    bySnapshot.get(snap).push(entry);
+  }
+  for (const [snap, entries] of bySnapshot) {
+    const side = entries[0].side;
+    let pieces;
+    try {
+      pieces = C.loadSides(engineSrc, { [side]: fs.readFileSync(path.join(ROOT, 'catalogue', snap, 'pieces.js'), 'utf8') })[side].pieces;
+    } catch (err) {
+      t.todo(`${snap} no longer loads on the current engine: ${err.message}`);
+      continue;
+    }
+    for (const entry of entries) {
+      assert.ok(pieces[entry.key], `${entry.id} not in snapshot`);
+      for (const c of entry.companions) assert.ok(pieces[c.key], `${entry.id}#${c.key} not in snapshot`);
+    }
+  }
+});

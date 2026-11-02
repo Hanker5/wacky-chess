@@ -11,8 +11,12 @@
  * icons in catalogue.json are rewritten to point inside catalogue/.
  */
 'use strict';
+const fs = require('node:fs');
+const path = require('node:path');
 const vm = require('node:vm');
+const { spawnSync } = require('node:child_process');
 
+const ROOT = path.join(__dirname, '..');
 const SIDE_ORDER = ['white', 'black'];
 const COMPANION_FIELDS = ['key', 'name', 'icon', 'royal', 'description', 'customArt'];
 
@@ -110,6 +114,136 @@ function dropEntry(catalogue, id) {
   return { ...catalogue, entries: catalogue.entries.filter((x) => x !== entry) };
 }
 
+// ------------------------------------------------------------- git side
+
+// git(args) -> { ok, out: Buffer }. Injected so the tests can fake it.
+function realGit(args) {
+  const r = spawnSync('git', args, { cwd: ROOT, maxBuffer: 64 * 1024 * 1024 });
+  return { ok: r.status === 0, out: r.stdout || Buffer.alloc(0) };
+}
+
+const branchExists = (git, ref) => git(['rev-parse', '--verify', '--quiet', ref]).ok;
+
+// The catalogue is public, so only a match whose player branches are merged (or gone)
+// may go in: an unmerged player branch may still hold a secret side.
+function checkSecrecy(match, git) {
+  const ref = `origin/match/${match}`;
+  if (!branchExists(git, ref)) return `No branch ${ref}. Run git fetch, and check the match name.`;
+  for (const color of SIDE_ORDER) {
+    const player = `${ref}-${color}`;
+    if (branchExists(git, player) && !git(['merge-base', '--is-ancestor', player, ref]).ok) {
+      return `match/${match}-${color} isn't merged into match/${match} yet, so its pieces may still be secret. Merge it first.`;
+    }
+  }
+  return null;
+}
+
+function show(git, spec) {
+  const r = git(['show', spec]);
+  if (!r.ok) throw new Error(`git show ${spec} failed`);
+  return r.out;
+}
+
+function readCatalogue(root) {
+  const file = path.join(root, 'catalogue', 'catalogue.json');
+  return fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : { version: 1, entries: [] };
+}
+
+function writeCatalogue(root, catalogue) {
+  fs.mkdirSync(path.join(root, 'catalogue'), { recursive: true });
+  fs.writeFileSync(path.join(root, 'catalogue', 'catalogue.json'), `${JSON.stringify(catalogue, null, 2)}\n`);
+}
+
+// Snapshot origin/match/<match> into catalogue/<match>/ and draft its entries into
+// catalogue.json, replacing anything that match had there before.
+function snapshotMatch(match, git, root) {
+  const ref = `origin/match/${match}`;
+  const engineSrc = show(git, `${ref}:engine/engine.js`).toString('utf8');
+  const sources = {};
+  for (const side of SIDE_ORDER) sources[side] = show(git, `${ref}:sides/${side}/pieces.js`);
+  const registry = loadSides(engineSrc, { white: sources.white.toString('utf8'), black: sources.black.toString('utf8') });
+  const template = loadSides(show(git, 'origin/main:engine/engine.js').toString('utf8'), {
+    white: show(git, 'origin/main:sides/white/pieces.js').toString('utf8'),
+    black: show(git, 'origin/main:sides/black/pieces.js').toString('utf8'),
+  });
+  const templatePieces = { ...template.white.pieces, ...template.black.pieces };
+
+  const dir = path.join(root, 'catalogue', match);
+  fs.rmSync(dir, { recursive: true, force: true });
+  const catalogue = readCatalogue(root);
+  const others = catalogue.entries.filter((x) => x.match !== match);
+  const drafted = [];
+  const report = [];
+  for (const side of SIDE_ORDER) {
+    const sideDir = path.join(dir, side);
+    fs.mkdirSync(sideDir, { recursive: true });
+    fs.writeFileSync(path.join(sideDir, 'pieces.js'), sources[side]);
+    const prefix = `sides/${side}/assets/`;
+    const assets = git(['ls-tree', '-r', '--name-only', ref, '--', prefix]).out.toString('utf8').split('\n').filter(Boolean);
+    for (const asset of assets) {
+      const target = path.join(sideDir, 'assets', asset.slice(prefix.length));
+      fs.mkdirSync(path.dirname(target), { recursive: true });
+      fs.writeFileSync(target, show(git, `${ref}:${asset}`));
+    }
+
+    let design = null;
+    const designFile = git(['show', `${ref}:sides/${side}/design.json`]);
+    if (designFile.ok) {
+      try { design = JSON.parse(designFile.out.toString('utf8')); } catch (err) { design = null; }
+    }
+    const sideDef = registry[side];
+    const entries = draftEntries({ match, side, sideDef, design, templatePieces });
+    const dupes = new Map(findDuplicates(entries, others).map((d) => [d.id, d.duplicateOf]));
+    const inSetup = new Set(sideDef.setup.flat());
+    for (const entry of entries) {
+      const flags = [];
+      if (dupes.has(entry.id)) flags.push(`⚠ possible duplicate of ${dupes.get(entry.id)}`);
+      if (!inSetup.has(entry.key)) flags.push('· not in starting setup (helper?)');
+      report.push(`${entry.id}  ${entry.name}${flags.length ? `  ${flags.join('  ')}` : ''}`);
+    }
+    for (const [key, def] of Object.entries(sideDef.pieces)) {
+      if (isStock(def, templatePieces)) report.push(`left out (stock chess): ${match}/${side}/${key}`);
+    }
+    drafted.push(...entries);
+  }
+  const merged = mergeEntries(catalogue, match, drafted);
+  writeCatalogue(root, merged);
+  return { catalogue: merged, report };
+}
+
 module.exports = {
   loadSides, rewriteIcon, isStock, draftEntries, findDuplicates, mergeEntries, makeCompanion, dropEntry,
+  checkSecrecy, snapshotMatch,
 };
+
+if (require.main === module) {
+  const [cmd, ...args] = process.argv.slice(2);
+  const usage = () => {
+    console.error('Usage:\n  node tools/catalogue.js add <match>\n  node tools/catalogue.js companion <parentId> <childId>\n  node tools/catalogue.js drop <id>');
+    process.exit(1);
+  };
+  try {
+    if (cmd === 'add' && args.length === 1) {
+      if (!realGit(['fetch', '--prune']).ok) console.warn('⚠ git fetch failed; using the branches you already have.');
+      const refusal = checkSecrecy(args[0], realGit);
+      if (refusal) {
+        console.error(`✖ ${refusal}`);
+        process.exit(1);
+      }
+      const { report } = snapshotMatch(args[0], realGit, ROOT);
+      console.log(report.join('\n'));
+      console.log('\nNext: fold helpers in with `companion`, remove duplicates and near-stock pieces with `drop`, then run node --test.');
+    } else if (cmd === 'companion' && args.length === 2) {
+      writeCatalogue(ROOT, makeCompanion(readCatalogue(ROOT), args[0], args[1]));
+      console.log(`${args[1]} is now a companion of ${args[0]}`);
+    } else if (cmd === 'drop' && args.length === 1) {
+      writeCatalogue(ROOT, dropEntry(readCatalogue(ROOT), args[0]));
+      console.log(`dropped ${args[0]}`);
+    } else {
+      usage();
+    }
+  } catch (err) {
+    console.error(`✖ ${err.message}`);
+    process.exit(1);
+  }
+}
