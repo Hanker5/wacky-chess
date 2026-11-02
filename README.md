@@ -38,13 +38,14 @@ or build. It's hot-seat play on one screen.
 
 ## Branch rules: every match is its own branch
 
-`main` is the **base template**: the engine, the UI, the docs, and two plain-chess
-sides. Custom pieces never go on `main`. Each match gets its own branches, so every
+`main` is the **base template**: the engine, the UI, the docs, two plain-chess sides,
+and the **piece catalogue** (`catalogue/`), a library of every piece from past matches.
+Playable custom sides never go on `main`. Each match gets its own branches, so every
 game you've ever played stays playable later, with exactly the pieces it had.
 
 | Branch | What's on it |
 |---|---|
-| `main` | The template. Only engine, UI, docs, and tooling changes, and only when both players agree. Both `sides/` files stay plain chess. |
+| `main` | The template. Only engine, UI, docs, tooling, and catalogue changes, and only when both players agree. Both `sides/` files stay plain chess. |
 | `match/<name>` | One match: both players' finished sides, merged together. Play the game from here. |
 | `match/<name>-white` | White's work in progress for that match. Only `sides/white/` changes. Deleted once the match starts. |
 | `match/<name>-black` | Black's work in progress for that match. Only `sides/black/` changes. Deleted once the match starts. |
@@ -87,6 +88,10 @@ other either. Each one is a separate game.
    Make sure each one is fully merged into the match branch, then delete it locally
    and on GitHub (your agent can do this, see `AGENTS.md`). After that, tweaks to your
    side go straight onto `match/2026-10-23`, still only in your own `sides/` folder.
+7. **Add it to the catalogue.** When the match is over, ask your agent to add its
+   pieces to the catalogue. It runs `node tools/catalogue.js add 2026-10-23` on a branch
+   off `main` and opens a pull request (see `AGENTS.md`). Next time, both players can
+   pick those pieces in the designer with **📚 From catalogue** and tweak them.
 
 ### Changing the template
 
@@ -103,8 +108,10 @@ engine/engine.js        rules engine (template; changed only on main)
 ui/                     board UI
 sides/white/pieces.js   White's pieces  ← player 1
 sides/black/pieces.js   Black's pieces  ← player 2
+catalogue/              every piece from past matches (catalogue.json + snapshots)
 docs/PIECE_API.md       how to define pieces, with examples
 tools/check.js          validate + fuzz the side files
 tools/serve.js          local server for playing (npm start)
+tools/catalogue.js      add a finished match to the catalogue
 test/                   engine tests (node --test)
 ```

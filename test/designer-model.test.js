@@ -162,3 +162,63 @@ test('the picker offers the template chess glyphs first, searchable by name', ()
   assert.deepEqual(D.searchEmoji(list, 'pawn').map(([e]) => e), ['♟', '♟️']);
   assert.deepEqual(D.searchEmoji(list, '', 6).map(([e]) => e), ['♚', '♛', '♜', '♝', '♞', '♟']);
 });
+
+const catalogueEntry = {
+  id: '2026-10-30/white/knight', match: '2026-10-30', side: 'white', sideName: 'White', key: 'knight',
+  name: 'Gardener', icon: '🪏', royal: false, description: 'Jumps or plants.', customArt: null,
+  companions: [
+    { key: 'plant', name: 'Plant', icon: '🌱', royal: false, description: 'Grows.', customArt: null },
+    { key: 'plant_2', name: 'Plant', icon: '☘️', royal: false, description: 'Grows more.', customArt: { description: 'a clover' } },
+  ],
+};
+
+test('addFromCatalogue adds the piece and its companions as normal cards with from', () => {
+  const d = D.emptyDesign('black');
+  d.pieces.push(piece('knight'), piece('plant'));
+  const before = JSON.stringify(d.setup);
+  assert.deepEqual(D.addFromCatalogue(d, catalogueEntry), ['knight_2', 'plant_2', 'plant_2_2']);
+  assert.deepEqual(d.pieces.slice(0, 2).map((p) => p.key), ['knight', 'plant']);
+  assert.deepEqual(d.pieces[2], {
+    key: 'knight_2', name: 'Gardener', icon: '🪏', royal: false,
+    description: 'Jumps or plants.', customArt: null, from: '2026-10-30/white/knight',
+  });
+  assert.equal(d.pieces[4].from, '2026-10-30/white/knight#plant_2');
+  assert.deepEqual(d.pieces[4].customArt, { description: 'a clover' });
+  assert.notEqual(d.pieces[4].customArt, catalogueEntry.companions[1].customArt); // copied, not shared
+  assert.equal(JSON.stringify(d.setup), before);
+  D.addFromCatalogue(d, catalogueEntry); // twice = two independent copies
+  assert.equal(d.pieces.length, 8);
+});
+
+test('normalizeDesign keeps a string from and drops anything else', () => {
+  const d = D.normalizeDesign('white', { pieces: [piece('a', { from: '2026-10-28/black/rook' }), piece('b', { from: 7 })] });
+  assert.equal(d.pieces[0].from, '2026-10-28/black/rook');
+  assert.equal('from' in d.pieces[1], false);
+});
+
+test('filterCatalogue searches name and description and filters by match', () => {
+  const list = [
+    { ...catalogueEntry, name: 'Zombie', description: 'Shambles toward enemies.', match: '2026-10-30' },
+    { ...catalogueEntry, name: 'Corolla', description: 'CHARGE through pieces.', match: '2026-10-28' },
+  ];
+  assert.deepEqual(D.filterCatalogue(list, { query: 'charge' }).map((e) => e.name), ['Corolla']);
+  assert.deepEqual(D.filterCatalogue(list, { query: 'toward ZOMBIE' }).map((e) => e.name), ['Zombie']);
+  assert.deepEqual(D.filterCatalogue(list, { match: '2026-10-30' }).map((e) => e.name), ['Zombie']);
+  assert.equal(D.filterCatalogue(list, {}).length, 2);
+  assert.deepEqual(D.catalogueMatches([...list, list[0]]), ['2026-10-30', '2026-10-28']);
+});
+
+test('fromLabel names the match and side', () => {
+  assert.equal(D.fromLabel('2026-10-28/black/rook'), 'from 10-28 · Black');
+  assert.equal(D.fromLabel('2026-10-30/white/knight#plant_2'), 'from 10-30 · White');
+  assert.equal(D.fromLabel(undefined), '');
+});
+
+test('companionNote names the helpers only when they share a name', () => {
+  const c = (name) => ({ key: name, name, icon: '', royal: false, description: '', customArt: null });
+  assert.equal(D.companionNote([]), '');
+  assert.equal(D.companionNote([c('Plant'), c('Plant'), c('Plant')]), '+3 Plant');
+  assert.equal(D.companionNote([c('Checker King')]), '+1 Checker King');
+  assert.equal(D.companionNote([c('Undead Pawn'), c('Undead Knight')]), '+2 helpers');
+  assert.equal(D.companionNote(undefined), '');
+});

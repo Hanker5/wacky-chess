@@ -73,9 +73,12 @@ and push. The secrecy rule is over by then, since the sides are merged and visib
    `index.html`, `designer.html`, `tools/`, `docs/`, or the other color's folder. The
    two players merge their branches later, and edits outside your folder cause
    conflicts. Changing the rules engine in your own favor would also be cheating.
+   (Adding a finished match to the catalogue is the one exception: it happens on a
+   `template/` branch off `main`, see "When a match ends" below.)
 2. **Don't peek at the other side.** Don't check out, diff, or read the other color's
    player branch, and don't read their `sides/` file if it differs from the plain-chess
-   template. The pieces are supposed to be a surprise.
+   template. The pieces are supposed to be a surprise. Reading `catalogue/` is always
+   fine: it only holds pieces from finished matches, which both players have seen.
 3. **If the engine seems to be missing something**, first try to build it from what
    exists. Actions, hooks, `data`, and tiles cover a lot. If you really can't, write
    the request in `sides/<your color>/ENGINE_REQUESTS.md` and tell your player, so
@@ -106,16 +109,61 @@ side's name, and for each piece a `key`, `name`, `icon` (an emoji, or an image p
   `sides/<your color>/assets/` that matches the description, and use its path as the
   `icon` in both `pieces.js` and `design.json`. Keep the `customArt` entry as a record.
   A piece whose `icon` is already an asset path has its art. Redraw it only if the
-  player changes the `customArt` description or asks.
+  player changes the `customArt` description or asks. A `catalogue/...` icon also
+  counts as having its art: copy it into your `assets/` (see "Pieces from the
+  catalogue"), don't redraw it.
 - **Keep `design.json` in sync with what you built.** After the first build, and after
   every later change (from chat or from a re-save in the designer), rewrite
   `design.json` so its names, icons, descriptions (including the details your
-  questions settled), royal flags, and setup match `pieces.js`. Commit it with
-  `pieces.js`. The designer then shows the side as it really is.
+  questions settled), royal flags, and setup match `pieces.js`. Keep each piece's
+  `from` field (see below). Commit it with `pieces.js`. The designer then shows the
+  side as it really is.
 - **When the player saves again from the designer**, run
   `git diff sides/<your color>/design.json`. Since the file was committed in sync with
   your last build, the diff is exactly what they changed. Implement those changes,
   asking clarifying questions about new or changed pieces as before.
+- **Pieces from the catalogue.** A design piece with a `from` field (like
+  `"from": "2026-10-28/black/rook"`) was added from the catalogue of past pieces, as a
+  starting point. Build it from the original code instead of from scratch:
+  1. Open `catalogue/<match>/<side>/pieces.js` and find the piece by the key at the end
+     of `from` (for a helper piece, the key after `#`). Copy its code, and any helpers it
+     uses, into your side file inside the wrapper.
+  2. Compare the card's description with the catalogue entry's description in
+     `catalogue/catalogue.json` (for a helper piece, look in its parent entry's
+     `companions` list). If they match, the player kept the piece as it was:
+     don't ask rule questions about it. Otherwise, ask clarifying questions about the
+     differences only.
+  3. Fix whatever changes between seats or matches: type names in `spawn` and
+     `transform` (the key may now be `rook_2`, and `white:`/`black:` qualifiers may point
+     at the wrong side), hard-coded sides like `'black'`, text that names the old side
+     or old piece names, and engine API changes since that match.
+  4. Copy any art from `catalogue/<match>/<side>/assets/` into `sides/<your color>/assets/`
+     and point `icon` there in both `pieces.js` and `design.json`.
+  5. Run `node tools/check.js <your color>` as always.
+
+## When a match ends: add it to the catalogue
+
+The catalogue (`catalogue/`, on `main`) holds every piece from every finished match, so
+players can reuse them from the designer. When your player says the match is over (or
+asks you to add it), and only then:
+
+1. Branch off `main`: `git checkout main && git pull && git checkout -b template/catalogue-<name>`.
+2. Run `node tools/catalogue.js add <name>`. It snapshots both sides of
+   `origin/match/<name>` into `catalogue/<name>/`, drafts an entry for every piece, leaves
+   out stock chess pieces, and prints a summary. It refuses if a player branch for that
+   match still exists unmerged, since its pieces may still be secret.
+3. Review the draft:
+   - Fold helper pieces (flagged `not in starting setup`, or disguises like a Ninja Pawn
+     that reveals into another piece) into their parent with
+     `node tools/catalogue.js companion <parentId> <childId>`.
+   - Remove true duplicates (flagged `possible duplicate of`) and pieces that are stock
+     chess in all but wording with `node tools/catalogue.js drop <id>`.
+   - Read every remaining description and check that it says what the piece does.
+4. Run `node --test`. It checks the catalogue against its snapshots.
+5. Commit, push, and open a pull request into `main` (ask your player first).
+
+Snapshots are history: never edit files under `catalogue/<match>/`. If an engine change
+breaks an old piece, the agent who reuses it adapts the code (step 3 above).
 
 ## How to work
 

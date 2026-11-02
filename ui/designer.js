@@ -139,7 +139,109 @@
 
   document.addEventListener('mousedown', (e) => {
     if (picker && !picker.box.contains(e.target) && !picker.anchor.contains(e.target)) closePicker();
+    if (drawer && !drawer.contains(e.target) && !$('from-catalogue').contains(e.target)) closeCatalogue();
   });
+
+  // ------------------------------------------------------------- catalogue drawer
+
+  let catalogue = null; // the entries once fetched; [] when there's no usable catalogue
+  let drawer = null;
+
+  const shortMatch = (match) => (match.includes('-') ? match.slice(match.indexOf('-') + 1) : match);
+  const sideLabel = (s) => `${s.charAt(0).toUpperCase()}${s.slice(1)}`;
+
+  async function loadCatalogue() {
+    if (catalogue) return catalogue;
+    try {
+      const res = await fetch('catalogue/catalogue.json');
+      const body = res.ok ? await res.json() : null;
+      catalogue = body && Array.isArray(body.entries) ? body.entries : [];
+    } catch (err) {
+      catalogue = [];
+    }
+    return catalogue;
+  }
+
+  function closeCatalogue() {
+    if (!drawer) return;
+    drawer.remove();
+    drawer = null;
+  }
+
+  function catalogueEntry(entry) {
+    const row = el('div', 'catalogue-entry');
+    const icon = el('div', `catalogue-icon token ${entry.side}`);
+    icon.append(iconNode(entry));
+
+    // Clicking the text shows the whole description; it's clamped to two lines otherwise.
+    const text = el('button', 'catalogue-text');
+    text.type = 'button';
+    const note = D.companionNote(entry.companions);
+    const meta = `${shortMatch(entry.match)} · ${sideLabel(entry.side)}${note ? ` · ${note}` : ''}`;
+    text.append(el('span', 'catalogue-name', entry.name), el('span', 'catalogue-meta', meta), el('span', 'catalogue-desc', entry.description));
+    text.addEventListener('click', () => row.classList.toggle('open'));
+
+    const add = el('button', 'primary', 'Add');
+    add.type = 'button';
+    let reset = null;
+    add.addEventListener('click', () => {
+      D.addFromCatalogue(design, entry);
+      markDirty();
+      renderAll();
+      add.textContent = 'Added ✓';
+      clearTimeout(reset);
+      reset = setTimeout(() => { add.textContent = 'Add'; }, 1500);
+    });
+
+    row.append(icon, text, add);
+    return row;
+  }
+
+  async function openCatalogue() {
+    if (drawer) return closeCatalogue();
+    const box = el('aside', 'catalogue-drawer');
+    box.setAttribute('role', 'dialog');
+    box.setAttribute('aria-label', 'Piece catalogue');
+    drawer = box;
+    const head = el('div', 'catalogue-head');
+    const close = el('button', 'catalogue-close', '✕');
+    close.type = 'button';
+    close.setAttribute('aria-label', 'Close');
+    close.addEventListener('click', closeCatalogue);
+    head.append(el('h2', '', '📚 Piece catalogue'), close);
+    box.append(head);
+    document.body.append(box);
+
+    const entries = await loadCatalogue();
+    if (drawer !== box) return; // closed while loading
+    if (!entries.length) {
+      box.append(el('p', 'catalogue-empty', 'No catalogue yet'));
+      close.focus();
+      return;
+    }
+    const search = el('input');
+    search.type = 'search';
+    search.placeholder = 'Search pieces: zombie, teleport, explode…';
+    const chips = el('div', 'catalogue-chips');
+    const list = el('div', 'catalogue-list');
+    let match = null;
+    const chipButtons = [null, ...D.catalogueMatches(entries)].map((m) => {
+      const b = el('button', 'chip', m ? shortMatch(m) : 'All');
+      b.type = 'button';
+      b.addEventListener('click', () => { match = m; show(); });
+      return [m, b];
+    });
+    const show = () => {
+      for (const [m, b] of chipButtons) b.classList.toggle('on', m === match);
+      const hits = D.filterCatalogue(entries, { query: search.value, match });
+      list.replaceChildren(...(hits.length ? hits.map(catalogueEntry) : [el('p', 'catalogue-empty', 'No pieces match.')]));
+    };
+    search.addEventListener('input', show);
+    chips.append(...chipButtons.map(([, b]) => b));
+    box.append(search, chips, list);
+    show();
+    search.focus();
+  }
 
   // ------------------------------------------------------------- cards
 
@@ -223,7 +325,9 @@
     });
     flags.append(royal, art, el('span', 'placed-note'));
 
-    box.append(top, desc, flags);
+    box.append(top, desc);
+    if (piece.from) box.append(el('div', 'from-note', D.fromLabel(piece.from)));
+    box.append(flags);
     if (piece.customArt) {
       box.append(textarea(piece.customArt.description, 'Describe the picture, e.g. "a rickety wooden catapult, green and moldy"', (v) => {
         piece.customArt.description = v;
@@ -438,8 +542,13 @@
     const last = $('cards').lastElementChild;
     if (last) last.querySelector('.name').select();
   });
+  $('from-catalogue').addEventListener('click', openCatalogue);
   $('save').addEventListener('click', () => save());
   document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && drawer) {
+      closeCatalogue();
+      $('from-catalogue').focus();
+    }
     if ((e.ctrlKey || e.metaKey) && e.key === 's' && design) {
       e.preventDefault();
       save();
