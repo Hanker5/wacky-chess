@@ -64,14 +64,16 @@
         ? p.key : slugKey(str(p.name) || str(p.key), keys);
       keys.add(key);
       const art = p.customArt && typeof p.customArt === 'object' ? { description: str(p.customArt.description) } : null;
-      pieces.push({
+      const piece = {
         key,
         name: str(p.name),
         icon: str(p.icon),
         royal: !!p.royal,
         description: str(p.description),
         customArt: art,
-      });
+      };
+      if (typeof p.from === 'string') piece.from = p.from;
+      pieces.push(piece);
     }
     return { version: 1, side, name: str(d.name), pieces, setup: fitSetup(d.setup, keys) };
   }
@@ -92,6 +94,52 @@
     const key = slugKey(name, design.pieces.map((p) => p.key));
     design.pieces.push({ key, name, icon: '', royal: false, description: '', customArt: null });
     return key;
+  }
+
+  // Copy a catalogue entry (see catalogue/catalogue.json) and its companions into the
+  // design as ordinary cards. `from` records where each came from, for the agent.
+  function addFromCatalogue(design, entry) {
+    const taken = design.pieces.map((p) => p.key);
+    const added = [];
+    const add = (source, from) => {
+      const key = slugKey(source.key, taken);
+      taken.push(key);
+      added.push(key);
+      design.pieces.push({
+        key,
+        name: str(source.name),
+        icon: str(source.icon),
+        royal: !!source.royal,
+        description: str(source.description),
+        customArt: source.customArt ? { description: str(source.customArt.description) } : null,
+        from,
+      });
+    };
+    add(entry, entry.id);
+    for (const c of entry.companions || []) add(c, `${entry.id}#${c.key}`);
+    return added;
+  }
+
+  // Every whitespace-separated term must appear in the name or description.
+  function filterCatalogue(entries, { query = '', match = null } = {}) {
+    const terms = str(query).toLowerCase().split(/\s+/).filter(Boolean);
+    return entries.filter((e) => {
+      if (match && e.match !== match) return false;
+      const text = `${str(e.name)} ${str(e.description)}`.toLowerCase();
+      return terms.every((t) => text.includes(t));
+    });
+  }
+
+  function catalogueMatches(entries) {
+    return [...new Set(entries.map((e) => e.match))].sort().reverse();
+  }
+
+  // '2026-10-28/black/rook#ninja' -> 'from 10-28 · Black'
+  function fromLabel(from) {
+    if (typeof from !== 'string') return '';
+    const [match, side = ''] = from.split('/');
+    const short = match.includes('-') ? match.slice(match.indexOf('-') + 1) : match;
+    return `from ${short} · ${side.charAt(0).toUpperCase()}${side.slice(1)}`;
   }
 
   function removePiece(design, key) {
@@ -163,6 +211,7 @@
     KEY_RE, ROWS, SIZE, CHESS_GLYPHS,
     slugKey, emptyDesign, normalizeDesign, designFromSide,
     addPiece, removePiece, rekeyPiece, setCell, isPlaced, warnings, searchEmoji,
+    addFromCatalogue, filterCatalogue, catalogueMatches, fromLabel,
   };
   root.WackyDesigner = api;
   if (typeof module === 'object' && module.exports) module.exports = api;
