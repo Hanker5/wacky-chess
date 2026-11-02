@@ -234,6 +234,10 @@ hooks, never in `moves()`.
 
 ## Examples of wacky pieces
 
+For real pieces from past matches, see `catalogue/`: `catalogue.json` lists them with
+their descriptions, and `catalogue/<match>/<side>/pieces.js` has the code exactly as it
+was played. They're good examples of cooldowns, effects, tiles, helper pieces, and more.
+
 ```js
 // Explodes, taking out everything around it (friends too) and itself.
 bomb: {
