@@ -1,0 +1,114 @@
+{
+  "version": 1,
+  "side": "white",
+  "name": "White",
+  "pieces": [
+    {
+      "key": "king",
+      "name": "Tung Tung Tung Sahur",
+      "icon": "sides/white/assets/tung_tung_sahur.svg",
+      "royal": true,
+      "description": "Moves like a queen: slides any distance in any direction. Royal: you lose when all of your royal pieces are captured (you start with three).",
+      "customArt": {
+        "description": "Like tung tung tung sahur, in other words like a long wood circle with a wooden bat."
+      }
+    },
+    {
+      "key": "queen",
+      "name": "Tralalero Tralala",
+      "icon": "sides/white/assets/tralalero_tralala.svg",
+      "royal": false,
+      "description": "Slides any distance in any direction.",
+      "customArt": {
+        "description": " A three-limbed shark wearing blue Nike Air sneakers."
+      }
+    },
+    {
+      "key": "rook",
+      "name": "Bombardiro Crocodilo",
+      "icon": "sides/white/assets/bombardiro_crocodilo.svg",
+      "royal": false,
+      "description": "Slides any distance in a straight line. BOMB DROP: instead of moving, it stays where it is and destroys every piece on the 8 squares around it (3x3 grid), friend or enemy, royal pieces included. It is never harmed by its own bombs. Needs at least one piece next to it, then 3 turns to recharge (the badge counts down).",
+      "customArt": {
+        "description": "A dangerous hybrid of a crocodile and a military bomber plane"
+      }
+    },
+    {
+      "key": "bishop",
+      "name": "Ballerina Cappuccina",
+      "icon": "sides/white/assets/ballerina_cappuccina.svg",
+      "royal": false,
+      "description": "Slides any distance diagonally.",
+      "customArt": {
+        "description": " A coffee-cup dancer in a pink tutu."
+      }
+    },
+    {
+      "key": "knight",
+      "name": "Hydrogen Bomb",
+      "icon": "💥",
+      "royal": false,
+      "description": "Never moves on its own (only a Catapult can move it). DETONATE: on your turn, instead of moving anything else, it destroys every piece in the 5x5 grid around it, friend or enemy, royal pieces included, and itself too. If a Catapult flings it, it detonates where it lands.",
+      "customArt": null
+    },
+    {
+      "key": "pawn",
+      "name": "Cappuccino Assassino",
+      "icon": "sides/white/assets/cappuccino_assassino.svg",
+      "royal": false,
+      "description": "Moves 1 forward (2 on its first move) and captures diagonally forward. Becomes a Tralalero Tralala on the far rank.",
+      "customArt": {
+        "description": " A coffee-cup assassin with sharp knife limbs."
+      }
+    },
+    {
+      "key": "coughing_baby",
+      "name": "Coughing Baby",
+      "icon": "👶",
+      "royal": false,
+      "description": "Does nothing. Cannot move and cannot capture anything by itself. It can still be captured, and a Catapult can fling it (and it crushes whatever it lands on, like any flung piece).",
+      "customArt": null
+    },
+    {
+      "key": "catapult",
+      "name": "Catapult",
+      "icon": "sides/white/assets/catapult.svg",
+      "royal": false,
+      "description": "Slides any distance in a straight line, like a rook. FLING: instead of moving, it launches any piece (either side) on one of the 8 squares around it. The piece flies straight away from the catapult, over anything in between, and lands 1 to 4 squares further on. It can land on an empty square or crush one of the Catapult's enemies there, kings included, but never on a friend of the Catapult. If the crushed piece survives, the flung piece stays where it was. A flung Hydrogen Bomb detonates where it lands.",
+      "customArt": null,
+      "from": "2026-10-26/white/catapult"
+    }
+  ],
+  "setup": [
+    [
+      "rook",
+      "king",
+      "bishop",
+      "queen",
+      "king",
+      "bishop",
+      "king",
+      "rook"
+    ],
+    [
+      "pawn",
+      "catapult",
+      "pawn",
+      "pawn",
+      "pawn",
+      "pawn",
+      "catapult",
+      "pawn"
+    ],
+    [
+      null,
+      "knight",
+      null,
+      "coughing_baby",
+      "coughing_baby",
+      null,
+      "knight",
+      null
+    ]
+  ]
+}
