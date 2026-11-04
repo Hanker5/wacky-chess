@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- wooden shaft, running from bottom-left to top-right -->
+  <line x1="10" y1="54" x2="44" y2="20" stroke="#6b4423" stroke-width="5" stroke-linecap="round"/>
+  <line x1="10" y1="54" x2="44" y2="20" stroke="#a0693a" stroke-width="2" stroke-linecap="round"/>
+  <!-- leather binding where the head meets the shaft -->
+  <line x1="40" y1="24" x2="46" y2="18" stroke="#3b2a1a" stroke-width="7" stroke-linecap="butt"/>
+  <!-- iron spearhead -->
+  <path d="M44 20 L50 10 L58 6 L54 14 L56 22 Z" fill="#9aa3ad" stroke="#4b535c" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M49 13 L57 7" stroke="#e6ebef" stroke-width="1.5" stroke-linecap="round"/>
+</svg>
