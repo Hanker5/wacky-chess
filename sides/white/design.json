@@ -101,14 +101,14 @@
       "pawn"
     ],
     [
+      null,
+      "knight",
+      "catapult",
       "coughing_baby",
-      "knight",
-      "catapult",
-      null,
-      null,
+      "coughing_baby",
       "catapult",
       "knight",
-      "coughing_baby"
+      null
     ]
   ]
 }

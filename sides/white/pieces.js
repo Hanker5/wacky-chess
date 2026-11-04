@@ -161,7 +161,7 @@
     setup: [
       ['rook', 'king', 'bishop', 'queen', 'king', 'bishop', 'king', 'rook'],
       ['pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn'],
-      ['coughing_baby', 'knight', 'catapult', null, null, 'catapult', 'knight', 'coughing_baby'],
+      [null, 'knight', 'catapult', 'coughing_baby', 'coughing_baby', 'catapult', 'knight', null],
     ],
   });
 })();
