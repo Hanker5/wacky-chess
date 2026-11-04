@@ -1,0 +1,338 @@
+{
+  "version": 1,
+  "side": "black",
+  "name": "Black",
+  "pieces": [
+    {
+      "key": "queen",
+      "name": "Heavy Artillery",
+      "icon": "sides/black/assets/heavy-artillery.svg",
+      "royal": false,
+      "description": "Each turn, pick one: STEP 1 square in any direction, capturing an enemy there. Or FIRE 💣: lob a shell over anything in the way onto any square 2 to 5 squares away in one of the 8 directions (empty or not). The shell destroys every piece on that square and the 8 squares around it, friend or foe, Kings included: blowing up the enemy King wins, blowing up your own last King loses. Reloading takes 5 turns, counting both players' turns, so it can fire again on your 3rd turn after firing (the badge counts down every turn).",
+      "customArt": {
+        "description": "Draw a large modern military style artillery cannon"
+      },
+      "from": "2026-10-30/white/queen"
+    },
+    {
+      "key": "bishop",
+      "name": "Hypnotist",
+      "icon": "🔮",
+      "royal": false,
+      "description": "Each turn, pick one: STEP 1 square in any direction, capturing an enemy there. Or HYPNOTIZE 🌀 an enemy on one of the 8 squares next to it (not a King or other royal): it joins Black, keeping its type and abilities, and you can use it on your next 3 turns. Right after your 3rd turn it turns back to White. While hypnotized, its square is tinted violet, with a counter in the corner showing how many of your turns are left. The spell keeps going even if the Hypnotist is captured. A Black piece that White has taken over can be hypnotized back, and then it rejoins Black for good. After hypnotizing, it can't hypnotize again on your next 3 turns (the badge counts down).",
+      "customArt": null,
+      "from": "2026-10-30/white/bishop"
+    },
+    {
+      "key": "knight",
+      "name": "Gardener",
+      "icon": "🪏",
+      "royal": false,
+      "description": "Each turn, pick one: JUMP in an L shape like a Knight, over anything in the way, capturing an enemy where it lands. Or PLANT 🌱 a Plant on any empty square next to it (8 directions). After planting, it can't plant again on your next turn (the badge shows when it's waiting), but it can still jump.",
+      "customArt": null,
+      "from": "2026-10-30/white/knight"
+    },
+    {
+      "key": "plant",
+      "name": "Plant",
+      "icon": "🌱",
+      "royal": false,
+      "description": "Can't move or do anything, but it can be captured. Grows at the start of each of your turns: 🌱 → ☘️ → 🍀, and on your 3rd turn after being planted it becomes a random Black piece (from the same list a Mystery Piece rolls from), which can act that same turn. (This is stage 1 of 3.)",
+      "customArt": null,
+      "from": "2026-10-30/white/knight#plant"
+    },
+    {
+      "key": "plant_2",
+      "name": "Plant",
+      "icon": "☘️",
+      "royal": false,
+      "description": "Can't move or do anything, but it can be captured. Grows at the start of each of your turns: 🌱 → ☘️ → 🍀, and on your 3rd turn after being planted it becomes a random Black piece (from the same list a Mystery Piece rolls from), which can act that same turn. (This is stage 2 of 3.)",
+      "customArt": null,
+      "from": "2026-10-30/white/knight#plant_2"
+    },
+    {
+      "key": "plant_3",
+      "name": "Plant",
+      "icon": "🍀",
+      "royal": false,
+      "description": "Can't move or do anything, but it can be captured. Grows at the start of each of your turns: 🌱 → ☘️ → 🍀, and on your 3rd turn after being planted it becomes a random Black piece (from the same list a Mystery Piece rolls from), which can act that same turn. (This is stage 3 of 3.)",
+      "customArt": null,
+      "from": "2026-10-30/white/knight#plant_3"
+    },
+    {
+      "key": "pawn",
+      "name": "Checker",
+      "icon": "⚪️",
+      "royal": false,
+      "description": "Plays like a checkers piece. Moves 1 square diagonally forward onto an empty square. Or JUMP: hop diagonally forward over an adjacent enemy (the enemy King too, which wins) onto the empty square beyond, capturing it. After a jump it may keep jumping in the same turn (you pick where the chain stops). Reaching the far rank crowns it as a Checker King, and that ends the chain.",
+      "customArt": null,
+      "from": "2026-10-30/white/pawn"
+    },
+    {
+      "key": "checker_king",
+      "name": "Checker King",
+      "icon": "👑",
+      "royal": false,
+      "description": "A crowned Checker (not royal: losing it doesn't lose the game). Moves 1 square diagonally in any direction onto an empty square. Or JUMP diagonally in any direction over an adjacent enemy (the enemy King too, which wins) onto the empty square beyond, capturing it, and may keep chaining jumps in the same turn.",
+      "customArt": null,
+      "from": "2026-10-30/white/pawn#checker_king"
+    },
+    {
+      "key": "zombie",
+      "name": "Zombie",
+      "icon": "🧟",
+      "royal": false,
+      "description": "Moves on its own and can't be moved by you. At the start of each of your turns (before you move), it shambles 1 square toward the nearest enemy. If an enemy is right next to it, it eats it instead, the enemy King included (which wins the game). Otherwise it steps to whichever empty neighboring square gets it closest to an enemy, and stays put if no step gets closer. Ties are picked at random.",
+      "customArt": null,
+      "from": "2026-10-30/white/zombie"
+    },
+    {
+      "key": "rook",
+      "name": "Archer",
+      "icon": "🏹",
+      "royal": false,
+      "description": "Steps one square in any direction (capturing as it goes). Or shoots any enemy piece on the board, no line of sight needed, every turn with no cooldown. The arrow has a 75% chance to drift one square in a random one of the 8 directions (possibly off the board). It destroys whatever piece it ends on, friend or foe. Otherwise it lands on the target.",
+      "customArt": null,
+      "from": "2026-10-30/black/rook"
+    },
+    {
+      "key": "bishop_2",
+      "name": "Kamikaze",
+      "icon": "🛩️",
+      "royal": false,
+      "description": "Moves like a queen in all 8 directions but flies over any pieces in the way. Landing on an enemy makes it blow up, destroying every piece in the 3x3 area around that square, friends and itself included. It can also detonate in place instead of moving. One use only. Indestructible Castles survive.",
+      "customArt": null,
+      "from": "2026-10-30/black/bishop"
+    },
+    {
+      "key": "pawn_2",
+      "name": "Castle",
+      "icon": "🏰",
+      "royal": false,
+      "description": "Cannot move and cannot be destroyed by anything. A wall.",
+      "customArt": null,
+      "from": "2026-10-30/black/pawn"
+    },
+    {
+      "key": "barbarians",
+      "name": "Barbarians",
+      "icon": "⚔️",
+      "royal": false,
+      "description": "Steps one square up, down, left or right (capturing an enemy it steps onto). It can also kill any enemy in the 8 squares around it without moving, every turn, with no cooldown.",
+      "customArt": null,
+      "from": "2026-10-30/black/barbarians"
+    },
+    {
+      "key": "spear",
+      "name": "Spear",
+      "icon": "sides/black/assets/spear.svg",
+      "royal": false,
+      "description": "Steps one square in any direction (capturing as it goes). It can also kill any enemy within 2 squares (the whole 5x5 area around it), over anything in between, without moving, every turn with no cooldown.",
+      "customArt": {
+        "description": "A spear with a wooden handle and an iron head."
+      },
+      "from": "2026-10-30/black/spear"
+    },
+    {
+      "key": "queen_2",
+      "name": "Flash",
+      "icon": "⚡️",
+      "royal": false,
+      "description": "Slides any distance in any direction, and may make one 45° or 90° turn partway through the move. It cannot move through pieces, and captures only on the square where its path ends.",
+      "customArt": null,
+      "from": "2026-10-28/white/queen"
+    },
+    {
+      "key": "rook_2",
+      "name": "Tank",
+      "icon": "💪",
+      "royal": false,
+      "description": "Moves one square in any of 8 directions, capturing as it goes. Instead of moving it can THROW an adjacent friendly piece onto any empty square within 5 squares of the Tank. It can never throw onto an occupied square or throw enemies. Or it can SMASH the ground, destroying every piece (friend or foe) in the 3x3 area around it; the Tank is safe. Smash has a 5-turn cooldown.",
+      "customArt": null,
+      "from": "2026-10-28/white/rook"
+    },
+    {
+      "key": "bishop_3",
+      "name": "Grenade Launcher",
+      "icon": "💣️",
+      "royal": false,
+      "description": "Moves like a pawn: 1 forward (2 on its first move) without capturing, and captures diagonally forward. It never promotes. Instead it can lob a grenade at any square exactly 1 to 3 squares away in a straight line (any of 8 directions, over pieces). The blast destroys every piece in the 3x3 area around the target, friend or foe, royals included, and the Launcher itself if it is in the blast. 5-turn cooldown.",
+      "customArt": null,
+      "from": "2026-10-28/white/bishop"
+    },
+    {
+      "key": "knight_2",
+      "name": "Light",
+      "icon": "💡",
+      "royal": false,
+      "description": "Cannot move. Instead it can shine its light: a 50% chance that the opponent is blinded (cannot see the pieces on the board) for their next two turns. Using it takes your turn whether or not it works, and it can only be tried once every 10 of your turns. If the Light is captured the blindness ends.",
+      "customArt": null,
+      "from": "2026-10-28/white/knight"
+    },
+    {
+      "key": "necromancer",
+      "name": "Necromancer",
+      "icon": "🪄",
+      "royal": false,
+      "description": "Moves one square in any direction. Once per game it can raise the dead: every EMPTY square in the 5x5 area around it fills with a Dead Body. Pieces already there are untouched, but they are hemmed in. Dead Bodies never move, block movement, and can be captured.",
+      "customArt": null,
+      "from": "2026-10-28/white/necromancer"
+    },
+    {
+      "key": "dead",
+      "name": "Dead Body",
+      "icon": "💀",
+      "royal": false,
+      "description": "Raised by the Necromancer. Never moves and blocks the square, but can be captured.",
+      "customArt": null,
+      "from": "2026-10-28/white/necromancer#dead"
+    },
+    {
+      "key": "rook_3",
+      "name": "2009 Toyota Corolla",
+      "icon": "🚗",
+      "royal": false,
+      "description": "Moves like a Rook. Or CHARGE 🚗💨: drive any distance in a straight line (up, down, left or right) right through other pieces, running over every piece it passes and the one it lands on: friend or foe, the enemy King included. It can't charge through your own King. After a charge it can only make normal Rook moves for your next 3 turns (the badge counts down). If a piece survives being hit, the car drives over it; if the piece on the final square survives, the car stops on the last empty square before it.",
+      "customArt": null,
+      "from": "2026-10-28/black/rook"
+    },
+    {
+      "key": "bishop_4",
+      "name": "Wizard",
+      "icon": "🧙‍♂️",
+      "royal": false,
+      "description": "Each turn, pick one: STEP 1 square in any direction, capturing an enemy there. FIREBALL 🔥: blast the first piece within 3 squares in any of the 8 directions, friend or foe (never your own King), destroying it while the Wizard stays put. TELEPORT ✨: jump to any empty square, or swap places with one of your own pieces (never onto an enemy). Fireball and Teleport each have their own cooldown: after use, that ability is unavailable for your next 3 turns (the badge shows 🔥/✨ and turns left).",
+      "customArt": null,
+      "from": "2026-10-28/black/bishop"
+    },
+    {
+      "key": "catapult",
+      "name": "Catapult",
+      "icon": "sides/black/assets/catapult.svg",
+      "royal": false,
+      "description": "Slides any distance in a straight line, like a rook. FLING: instead of moving, it launches any piece (either side) on one of the 8 squares around it. The piece flies straight away from the catapult, over anything in between, and lands 1 to 4 squares further on. It can land on an empty square or crush one of the Catapult's enemies there, kings included, but never on a friend of the Catapult. If the crushed piece survives, the flung piece stays where it was.",
+      "customArt": null,
+      "from": "2026-10-26/white/catapult"
+    },
+    {
+      "key": "necromancer_2",
+      "name": "Necromancer",
+      "icon": "💀",
+      "royal": false,
+      "description": "Slides any distance in any direction, like a queen. RAISE DEAD: instead of moving, she brings back one of your captured pieces (not a King, Plant or Dead Body) on an empty square next to her, with all its real abilities. Then she needs 4 turns to recharge (the badge counts down). Raised pieces are Undead: their square is tinted green, they crumble to dust after 3 of your turns (the ☠ badge counts down), and once dead they stay dead. A raised Wizard 🧙 or Catapult comes back as its Undead version.",
+      "customArt": null,
+      "from": "2026-10-26/white/necromancer"
+    },
+    {
+      "key": "undead_wizard",
+      "name": "Undead Wizard",
+      "icon": "sides/black/assets/undead_wizard.svg",
+      "royal": false,
+      "description": "Raised by the Necromancer. Each turn, picks one spell. STEP: moves 1 square in any direction, capturing normally. FIREBALL 🔥: destroys the first enemy in any straight or diagonal line within 3 squares (not kings or other royals), then needs 3 turns to recharge (the badge counts down). OPEN PORTAL 🌀: places a pair of linked portals on any two empty squares (two clicks, one turn). Any piece, from either side, that ends a move on a portal is sent to the other one, and whatever is standing there is destroyed (telefrag), friend or foe, even a king. Each wizard has one pair; opening a new pair closes the old one, and its portals vanish if the wizard dies. Crumbles to dust after 3 turns (the ☠ badge counts down), and can't be raised again.",
+      "customArt": null,
+      "from": "2026-10-26/white/necromancer#undead_wizard"
+    },
+    {
+      "key": "undead_catapult",
+      "name": "Undead Catapult",
+      "icon": "sides/black/assets/undead_catapult.svg",
+      "royal": false,
+      "description": "Raised by the Necromancer. Slides any distance in a straight line, like a rook. FLING: instead of moving, it launches any piece (either side) on one of the 8 squares around it. The piece flies straight away from the catapult, over anything in between, and lands 1 to 4 squares further on. It can land on an empty square or crush one of the Catapult's enemies there, kings included, but never on a friend of the Catapult. If the crushed piece survives, the flung piece stays where it was. Crumbles to dust after 3 turns (the ☠ badge counts down), and can't be raised again.",
+      "customArt": null,
+      "from": "2026-10-26/white/necromancer#undead_catapult"
+    },
+    {
+      "key": "wizard",
+      "name": "Wizard",
+      "icon": "🧙",
+      "royal": false,
+      "description": "Each turn, picks one spell. STEP: moves 1 square in any direction, capturing normally. FIREBALL 🔥: destroys the first enemy in any straight or diagonal line within 3 squares (not kings or other royals), then needs 3 turns to recharge (the badge counts down). OPEN PORTAL 🌀: places a pair of linked portals on any two empty squares (two clicks, one turn). Any piece, from either side, that ends a move on a portal is sent to the other one, and whatever is standing there is destroyed (telefrag), friend or foe, even a king. Each wizard has one pair; opening a new pair closes the old one, and its portals vanish if the wizard dies.",
+      "customArt": null,
+      "from": "2026-10-26/white/wizard"
+    },
+    {
+      "key": "wayfinder",
+      "name": "Wayfinder",
+      "icon": "🚩",
+      "royal": false,
+      "description": "Moves 1 square forward, or captures 1 square diagonally forward. Reaching White’s back rank wins the game for Black.",
+      "customArt": null,
+      "from": "2026-10-26/black/wayfinder"
+    },
+    {
+      "key": "creeper",
+      "name": "Creeper",
+      "icon": "💣",
+      "royal": false,
+      "description": "Moves 1 square in any direction. After it moves, a fuse counts down for 2 full rounds (4 moves by both players); then it destroys every piece in the surrounding 3×3 area, including itself and allies.",
+      "customArt": null,
+      "from": "2026-10-26/black/creeper"
+    },
+    {
+      "key": "swapper",
+      "name": "Swapper",
+      "icon": "🔁",
+      "royal": false,
+      "description": "Moves 1 square in any direction, or trades places with any other piece on the board, friend or foe.",
+      "customArt": null,
+      "from": "2026-10-26/black/swapper"
+    },
+    {
+      "key": "teleporter",
+      "name": "Teleporter",
+      "icon": "🌀",
+      "royal": false,
+      "description": "Moves 1 square in any direction, or teleports to any empty square, or teleports onto any enemy piece anywhere on the board and captures it, except Kings and other royal pieces (it can only take those by stepping 1 square).",
+      "customArt": null,
+      "from": "2026-10-26/black/teleporter"
+    },
+    {
+      "key": "king",
+      "name": "King",
+      "icon": "♚",
+      "royal": true,
+      "description": "Moves one square in any direction. You start with two Kings: lose both and you lose.",
+      "customArt": null
+    },
+    {
+      "key": "mystery_piece",
+      "name": "Mystery Piece",
+      "icon": "❓️",
+      "royal": false,
+      "description": "Can't move. On your turn, click it and then click it again to ACTIVATE ❓: it turns into a random one of these 23 pieces, each equally likely: Heavy Artillery, Hypnotist, Gardener, Checker, Zombie, Archer, Kamikaze, Castle, Barbarians, Spear, Flash, Tank, Grenade Launcher, Necromancer 🪄, 2009 Toyota Corolla, Wizard 🧙‍♂️, Catapult, Necromancer 💀, Wizard 🧙, Wayfinder, Creeper, Swapper, Teleporter. Activating uses your turn; the new piece can act from your next turn. Until then it can be captured like any piece.",
+      "customArt": null
+    }
+  ],
+  "setup": [
+    [
+      "rook_3",
+      "knight",
+      "knight",
+      "king",
+      "king",
+      "knight",
+      "knight",
+      "rook_3"
+    ],
+    [
+      "mystery_piece",
+      "mystery_piece",
+      "mystery_piece",
+      "mystery_piece",
+      "mystery_piece",
+      "mystery_piece",
+      "mystery_piece",
+      "mystery_piece"
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ]
+  ]
+}
