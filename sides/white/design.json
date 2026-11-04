@@ -92,21 +92,21 @@
     ],
     [
       "pawn",
+      "catapult",
       "pawn",
       "pawn",
       "pawn",
       "pawn",
-      "pawn",
-      "pawn",
+      "catapult",
       "pawn"
     ],
     [
       null,
       "knight",
-      "catapult",
+      null,
       "coughing_baby",
       "coughing_baby",
-      "catapult",
+      null,
       "knight",
       null
     ]

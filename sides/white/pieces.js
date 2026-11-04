@@ -160,8 +160,8 @@
     // Read from your own seat: first row is your back rank, listed left to right.
     setup: [
       ['rook', 'king', 'bishop', 'queen', 'king', 'bishop', 'king', 'rook'],
-      ['pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn'],
-      [null, 'knight', 'catapult', 'coughing_baby', 'coughing_baby', 'catapult', 'knight', null],
+      ['pawn', 'catapult', 'pawn', 'pawn', 'pawn', 'pawn', 'catapult', 'pawn'],
+      [null, 'knight', null, 'coughing_baby', 'coughing_baby', null, 'knight', null],
     ],
   });
 })();
